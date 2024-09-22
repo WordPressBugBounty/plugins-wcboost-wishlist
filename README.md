@@ -1,0 +1,1 @@
+# plugins-wcboost-wishlist
