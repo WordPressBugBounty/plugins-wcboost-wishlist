@@ -58,14 +58,14 @@ final class Plugin {
 	 * Cloning is forbidden.
 	 */
 	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Foul!', 'wcboost-wishlist' ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Foul!', 'wcboost-wishlist' ), '1.0.0' );
 	}
 
 	/**
 	 * Unserializing instances of this class is forbidden.
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Foul!', 'wcboost-wishlist' ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Foul!', 'wcboost-wishlist' ), '1.0.0' );
 	}
 
 	/**
@@ -153,6 +153,7 @@ final class Plugin {
 		include_once __DIR__ . '/data-stores/wishlist-item.php';
 		include_once __DIR__ . '/customizer/customizer.php';
 		include_once __DIR__ . '/widgets/wishlist.php';
+		include_once __DIR__ . '/integrations/manager.php';
 
 		if ( is_admin() ) {
 			include_once __DIR__ . '/admin/templates-notice.php';
@@ -176,6 +177,7 @@ final class Plugin {
 		Customize\Customizer::instance();
 		Frontend::instance();
 		Session::instance();
+		Integrations\Manager::instance();
 
 		if ( is_admin() ) {
 			new Admin\Templates_Notice();

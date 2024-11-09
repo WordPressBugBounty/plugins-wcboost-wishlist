@@ -480,13 +480,28 @@
 			var $emptyWishlist = $( '.wishlist-empty', $html ).closest( '.wcboost-wishlist' );
 
 			// Notices are handled later.
-			$emptyWishlist.find( '.woocommerce-error, .woocommerce-message, .woocommerce-info, .is-info, .is-success, .is-error' ).not( '.wishlist-empty' ).remove();
+			$emptyWishlist
+				.find( '.woocommerce-error, .woocommerce-message, .woocommerce-info, .is-info, .is-success, .is-error' )
+				.filter( function() {
+					if ( $( this ).closest( '.wishlist-empty' ).length ) {
+						return false;
+					}
+
+					return ! $( this ).hasClass( 'wishlist-empty' );
+				} )
+				.remove();
 
 			self.$wrapper.html( $emptyWishlist.html() );
 			self.$form = null;
 
 			// Remove the template's notice from the list of notices.
-			$notices = $notices.not( '.wishlist-empty' );
+			$notices = $notices.filter( function() {
+				if ( $( this ).closest( '.wishlist-empty' ).length ) {
+					return false;
+				}
+
+				return ! $( this ).hasClass( 'wishlist-empty' );
+			} );
 
 			// Notify plugins that the cart was emptied.
 			$( document.body ).trigger( 'wishlist_emptied', [ self ] );

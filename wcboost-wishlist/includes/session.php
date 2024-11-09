@@ -83,7 +83,7 @@ final class Session {
 			return '';
 		}
 
-		return $_COOKIE[ self::SESSION_NAME ];
+		return sanitize_text_field( wp_unslash( $_COOKIE[ self::SESSION_NAME ] ) );
 	}
 
 	/**

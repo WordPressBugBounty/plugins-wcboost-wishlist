@@ -105,7 +105,10 @@ class Wishlist extends \WC_Data {
 			$this->data_store->read( $this );
 			$this->data_store->read_items( $this );
 		} catch ( \Exception $e ) {
-			error_log( $e->getMessage() );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( 'Error reading wishlist: ' . $e->getMessage() );
+			}
 		}
 	}
 
@@ -257,7 +260,7 @@ class Wishlist extends \WC_Data {
 	 * @return int
 	 */
 	public function get_wishlist_id( $context = 'view' ) {
-		return $this->get_prop( 'wishlist_id', $context );
+		return intval( $this->get_prop( 'wishlist_id', $context ) );
 	}
 
 	/**
@@ -307,7 +310,7 @@ class Wishlist extends \WC_Data {
 	 * @return int
 	 */
 	public function get_menu_order( $context = 'view' ) {
-		return $this->get_prop( 'menu_order', $context );
+		return intval( $this->get_prop( 'menu_order', $context ) );
 	}
 
 	/**
@@ -327,7 +330,7 @@ class Wishlist extends \WC_Data {
 	 * @return int
 	 */
 	public function get_user_id( $context = 'view' ) {
-		return $this->get_prop( 'user_id', $context );
+		return intval( $this->get_prop( 'user_id', $context ) );
 	}
 
 	/**
@@ -367,7 +370,7 @@ class Wishlist extends \WC_Data {
 	 * @return bool
 	 */
 	public function get_is_default( $context = 'view' ) {
-		return $this->get_prop( 'is_default', $context );
+		return \wc_string_to_bool( $this->get_prop( 'is_default', $context ) );
 	}
 
 	/**

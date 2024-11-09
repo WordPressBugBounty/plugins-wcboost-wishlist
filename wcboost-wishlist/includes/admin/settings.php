@@ -179,11 +179,11 @@ class Settings extends \WC_Settings_Page {
 				'type' => 'sectionend',
 				'id'   => 'wcboost_wishlist_button_section',
 			],
-			  // Wishlist page.
+			// Wishlist page.
 			[
 				'type'  => 'title',
 				'title' => __( 'Wishlist Page', 'wcboost-wishlist' ),
-				  /* translators: %s: URL to the Customizer section */
+				/* translators: %s: URL to the Customizer section */
 				'desc' => wp_kses( sprintf( __( 'This section controls how the wishlist page is displayed. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_page' ) ) ), [ 'a' => [ 'href' => true, 'target' => true ] ] ),
 				'id'   => 'wcboost_wishlist_page_section',
 			],
@@ -197,6 +197,7 @@ class Settings extends \WC_Settings_Page {
 				'css'      => 'min-width:300px;',
 				'autoload' => false,
 				'args'     => [
+					// phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'exclude' => $exclude_pages,
 				],
 			],
