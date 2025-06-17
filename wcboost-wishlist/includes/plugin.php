@@ -3,21 +3,10 @@ namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
-use WCBoost\Packages\Manager as Packages_Manager;
-
 /**
  * Plugin main class
  */
 final class Plugin {
-
-	/**
-	 * Plugin properties
-	 *
-	 * @since 1.0.14
-	 *
-	 * @var array
-	 */
-	private $props = [];
 
 	/**
 	 * Query instance.
@@ -28,6 +17,8 @@ final class Plugin {
 
 	/**
 	 * Packages manager
+	 *
+	 * @deprecated 1.2.0
 	 *
 	 * @var \WCBoost\Packages\Manager
 	 */
@@ -80,11 +71,7 @@ final class Plugin {
 	public function __get( $prop ) {
 		switch ( $prop ) {
 			case 'version':
-				if ( empty( $this->props['version'] ) ) {
-					$plugin = get_plugin_data( WCBOOST_WISHLIST_FILE );
-					$this->props['version'] = $plugin['Version'];
-				}
-				return  $this->props['version'];
+				return WCBOOST_WISHLIST_VERSION;
 				break;
 
 			case 'packages':
@@ -97,7 +84,7 @@ final class Plugin {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->load_packages();
+		// $this->load_packages();
 		$this->includes();
 		$this->init();
 		$this->init_hooks();
@@ -110,7 +97,6 @@ final class Plugin {
 	 */
 	public function plugin_url( $path = '/' ) {
 		return untrailingslashit( plugins_url( $path, WCBOOST_WISHLIST_FILE ) );
-
 	}
 
 	/**
@@ -189,6 +175,7 @@ final class Plugin {
 	 */
 	protected function init_hooks() {
 		add_action( 'init', [ $this, 'load_translation' ] );
+		add_action( 'admin_init', [ $this, 'register_template_status' ] );
 
 		add_filter( 'woocommerce_data_stores', [ $this, 'register_data_stores' ] );
 		add_filter( 'woocommerce_get_wishlist_page_id', [ $this, 'wishlist_page_id' ] );
@@ -264,9 +251,21 @@ final class Plugin {
 	}
 
 	/**
+	 * Register template status check
+	 *
+	 * @since 1.2.0
+	 *
+	 * @return void
+	 */
+	public function register_template_status() {
+		\WCBoost\Packages\TemplatesStatus\Status::instance()->add_templates_path( 'WCBoost - Wishlist', $this->plugin_path() . '/templates/' );
+	}
+
+	/**
 	 * Load packages
 	 *
 	 * @since 1.0.13
+	 * @deprecated 1.2.0
 	 *
 	 * @return void
 	 */
@@ -275,12 +274,12 @@ final class Plugin {
 			include_once $this->plugin_path() . '/packages/manager.php';
 		}
 
-		$this->packages_manager = new Packages_Manager( $this->plugin_path() . '/packages' );
+		$this->packages_manager = new \WCBoost\Packages\Manager( $this->plugin_path() . '/packages' );
 
 		if ( is_admin() ) {
 			$this->packages_manager->load_package( 'templates-status' );
 
-			$templates_status = Packages_Manager::package( 'templates-status' );
+			$templates_status = \WCBoost\Packages\Manager::package( 'templates-status' );
 			$templates_status->add_templates_path( 'WCBoost - Wishlist', $this->plugin_path() . '/templates/' );
 		}
 	}

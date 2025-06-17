@@ -3,11 +3,12 @@ namespace WCBoost\Wishlist\Customize;
 
 defined( 'ABSPATH' ) || exit;
 
-use WCBoost\Packages\Utilities\Singleton_Trait;
+use WCBoost\Packages\Utilities\SingletonTrait;
 use WCBoost\Wishlist\Plugin;
 
 class Customizer {
-	use Singleton_Trait;
+
+	use SingletonTrait;
 
 	/**
 	 * Constructor.
@@ -650,6 +651,6 @@ class Customizer {
 		$plugin = Plugin::instance();
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'wcboost-wishlist-customize-preview', $plugin->plugin_url( '/assets/js/customize-preview' . $suffix . '.js' ), [ 'jquery', 'customize-preview' ], $plugin->version, true );
+		wp_enqueue_script( 'wcboost-wishlist-customize-preview', $plugin->plugin_url( '/assets/js/customize-preview' . $suffix . '.js' ), [ 'jquery', 'customize-preview' ], WCBOOST_WISHLIST_VERSION, true );
 	}
 }

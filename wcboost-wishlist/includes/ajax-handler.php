@@ -54,7 +54,6 @@ class Ajax_Handler {
 		}
 
 		$product_id     = apply_filters( 'wcboost_wishlist_add_to_wishlist_product_id', absint( $_POST['product_id'] ) );
-		$quantity       = empty( $_POST['quantity'] ) ? 1 : absint( $_POST['quantity'] );
 		$product        = wc_get_product( $product_id );
 		$product_status = get_post_status( $product_id );
 
@@ -70,6 +69,7 @@ class Ajax_Handler {
 		$wishlist_id = ! empty( $_REQUEST['wishlist'] ) ? absint( wp_unslash( $_REQUEST['wishlist'] ) ) : 0;
 		$wishlist    = Helper::get_wishlist( $wishlist_id );
 		$item        = new Wishlist_Item( $product );
+		$quantity    = empty( $_POST['quantity'] ) ? 1 : absint( $_POST['quantity'] );
 
 		// Insert the wishlist to db if it is a temporary one, so we have the wishlist_id.
 		if ( ! $wishlist->get_id() ) {
@@ -98,7 +98,7 @@ class Ajax_Handler {
 				'wishlist_url'   => $wishlist->get_public_url(),
 				'wishlist_items' => self::get_wishlist_items( $wishlist_id ),
 				'remove_url'     => $item->get_remove_url(),
-				'product_id'     => $product_id,
+				'product_id'     => $product->get_id(),
 			] );
 		} else {
 			wp_send_json_error();

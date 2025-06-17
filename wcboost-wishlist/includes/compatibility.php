@@ -4,15 +4,16 @@
  */
 namespace WCBoost\Wishlist;
 
-use WCBoost\Packages\Utilities\Singleton_Trait;
-
 defined( 'ABSPATH' ) || exit;
+
+use WCBoost\Packages\Utilities\SingletonTrait;
 
 /**
  * Compatibility class
  */
 class Compatibility {
-	use Singleton_Trait;
+
+	use SingletonTrait;
 
 	/**
 	 * Class constructor
@@ -35,13 +36,16 @@ class Compatibility {
 			add_filter( "woocommerce_{$item_object_type}_get_variation_id", [ $this, 'translate_variation_id' ] );
 
 			// Always use id of default product in adding actions.
-			add_filter( 'wcboost_wishlist_add_to_wishlist_product_id', [ $this, 'translate_product_id_to_default' ] );
+			// add_filter( 'wcboost_wishlist_add_to_wishlist_product_id', [ $this, 'translate_product_id_to_default' ] );
 
 			// Always use the same item key for removing actions.
 			add_filter( 'wcboost_wishlist_item_key', [ $this, 'translate_item_key_to_default' ], 10, 3 );
 
 			// Translate the wishlist page ID.
 			add_filter( 'option_wcboost_wishlist_page_id', [ $this, 'translate_option_wishlist_page_id' ] );
+
+			// Add suffix to the hash key.
+			add_filter( 'wcboost_wishlist_hash_key', [ $this, 'translate_hash_key' ] );
 		}
 	}
 
@@ -90,7 +94,7 @@ class Compatibility {
 	 * @return int
 	 */
 	public function translate_product_id( $product_id ) {
-		return apply_filters( 'wpml_object_id', $product_id, 'product' );
+		return apply_filters( 'wpml_object_id', $product_id, 'product', true );
 	}
 
 	/**
@@ -100,11 +104,11 @@ class Compatibility {
 	 * @return int
 	 */
 	public function translate_variation_id( $variation_id ) {
-		return apply_filters( 'wpml_object_id', $variation_id, 'product_variation' );
+		return apply_filters( 'wpml_object_id', $variation_id, 'product_variation', true );
 	}
 
 	/**
-	 * Treanslate product id to the default language.
+	 * Treanslate product ID to the default language.
 	 *
 	 * @param  int $product_id
 	 * @return int
@@ -112,7 +116,11 @@ class Compatibility {
 	public function translate_product_id_to_default( $product_id ) {
 		$default_lang = apply_filters( 'wpml_default_language', NULL );
 
-		return apply_filters( 'wpml_object_id', $product_id, 'product', false, $default_lang );
+		/**
+		 * Set the third parameter to true to return the original ID if the translation is not found.
+		 * This ensures the add to wishlist button always works properly.
+		 */
+		return apply_filters( 'wpml_object_id', $product_id, 'product', true, $default_lang );
 	}
 
 	/**
@@ -149,6 +157,18 @@ class Compatibility {
 	 */
 	public function translate_option_wishlist_page_id( $page_id ) {
 		return apply_filters( 'wpml_object_id', $page_id, 'page' );
+	}
+
+	/**
+	 * Translate the hash key by adding a suffix
+	 *
+	 * @since 1.1.6
+	 * @param  string $hash_key
+	 *
+	 * @return string
+	 */
+	public function translate_hash_key( $hash_key ) {
+		return $hash_key . '-' . get_locale();
 	}
 }
 

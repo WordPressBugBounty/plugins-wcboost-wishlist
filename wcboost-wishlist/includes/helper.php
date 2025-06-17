@@ -167,6 +167,7 @@ class Helper {
 		if ( 'custom' === $icon ) {
 			$custom = get_option( 'wcboost_wishlist_button_icon_custom', [ 'default' => '', 'added' => '' ] );
 			$url    = $filled ? $custom['added'] : $custom['default'];
+			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
 			$svg    = $url ? '<img src="' . esc_url( $url ) . '" alt="' . esc_attr__( 'Wishlist', 'wcboost-wishlist' ) . '" />' : '';
 		} else {
 			$icon = $filled ? $icon . '-filled' : $icon;
@@ -315,6 +316,25 @@ class Helper {
 	 */
 	public static function get_wishlist( $id = false ) {
 		return Plugin::instance()->query->get_wishlist( $id );
+	}
+
+	/**
+	 * Generate the hash key for a wishlist
+	 *
+	 * @since 1.1.6
+	 * @param \WCBoost\Wishlist\Wishlist|null $wishlist
+	 *
+	 * @return string
+	 */
+	public static function get_wishlist_hash_key( $wishlist = null ) {
+		if ( $wishlist && $wishlist->get_id() ) {
+			$hash_key = md5( get_current_blog_id() . '_' . $wishlist->get_id() . '_' . $wishlist->get_wishlist_token() );
+		} else {
+			// Generate a fixed hash for temporary wishlists.
+			$hash_key = md5( get_current_blog_id() . '_' . get_site_url( get_current_blog_id(), '/' ) . get_template() );
+		}
+
+		return apply_filters( 'wcboost_wishlist_hash_key', $hash_key, $wishlist );
 	}
 
 	/**

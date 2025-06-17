@@ -308,7 +308,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Return product object
 	 *
-	 * @return \WC_Product || \WC_Product_Variation
+	 * @return \WC_Product|\WC_Product_Variation
 	 */
 	public function get_product() {
 		if ( empty( $this->product ) ) {

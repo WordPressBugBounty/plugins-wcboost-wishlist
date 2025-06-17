@@ -8,13 +8,13 @@ namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
-use WCBoost\Packages\Utilities\Singleton_Trait;
+use WCBoost\Packages\Utilities\SingletonTrait;
 
 /**
  * Wishlist Session and Cookie Handler Class
  */
 final class Session {
-	use Singleton_Trait;
+	use SingletonTrait;
 
 	const SESSION_NAME = 'wcboost_wishlist_session';
 	const HASH_COOKIE = 'wcboost_wishlist_hash';
@@ -46,7 +46,18 @@ final class Session {
 			return;
 		}
 
-		$this->set_hash_cookies();
+		// Using try-catch to avoid fatal error when the wishlist is not found.
+		// This can happen when some plugin remove custom data store (such as WooCommerce Discount Rules).
+		try {
+			$wishlist = Helper::get_wishlist();
+
+			if ( $wishlist ) {
+				$this->set_hash_cookies();
+			}
+		} catch ( \Exception $e ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( 'Error setting wishlist hash cookie: ' . $e->getMessage() );
+		}
 	}
 
 	/**

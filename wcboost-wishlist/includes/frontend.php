@@ -1,12 +1,14 @@
 <?php
 namespace WCBoost\Wishlist;
 
-use WCBoost\Packages\Utilities\Singleton_Trait;
-
 defined( 'ABSPATH' ) || exit;
 
+use WCBoost\Packages\Utilities\SingletonTrait;
+use WCBoost\Wishlist\Helper;
+
 class Frontend {
-	use Singleton_Trait;
+
+	use SingletonTrait;
 
 	/**
 	 * Class constructor
@@ -112,9 +114,9 @@ class Frontend {
 		$plugin = Plugin::instance();
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_style( 'wcboost-wishlist', $plugin->plugin_url( '/assets/css/wishlist.css' ), [], $plugin->version );
-		wp_register_script( 'wcboost-wishlist', $plugin->plugin_url( '/assets/js/wishlist' . $suffix . '.js' ), [ 'jquery' ], $plugin->version, true );
-		wp_register_script( 'wcboost-wishlist-fragments', $plugin->plugin_url( '/assets/js/wishlist-fragments' . $suffix . '.js' ), [ 'jquery' ], $plugin->version, true );
+		wp_register_style( 'wcboost-wishlist', $plugin->plugin_url( '/assets/css/wishlist.css' ), [], WCBOOST_WISHLIST_VERSION );
+		wp_register_script( 'wcboost-wishlist', $plugin->plugin_url( '/assets/js/wishlist' . $suffix . '.js' ), [ 'jquery' ], WCBOOST_WISHLIST_VERSION, true );
+		wp_register_script( 'wcboost-wishlist-fragments', $plugin->plugin_url( '/assets/js/wishlist-fragments' . $suffix . '.js' ), [ 'jquery' ], WCBOOST_WISHLIST_VERSION, true );
 	}
 
 	/**
@@ -148,7 +150,7 @@ class Frontend {
 		wp_enqueue_script( 'wcboost-wishlist-fragments' );
 		wp_localize_script( 'wcboost-wishlist-fragments', 'wcboost_wishlist_fragments_params', [
 			'refresh_on_load' => get_option( 'wcboost_wishlist_ajax_bypass_cache', 'no' ),
-			'hash_name'       => 'wcboost_wishlist_hash_' . md5( get_current_blog_id() . '_' . get_site_url( get_current_blog_id(), '/' ) . get_template() ),
+			'hash_name'       => 'wcboost_wishlist_hash_' . Helper::get_wishlist_hash_key(),
 			'timeout'         => apply_filters( 'wcboost_wishlist_ajax_timeout', 5000 ),
 		] );
 	}

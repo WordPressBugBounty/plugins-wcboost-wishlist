@@ -704,7 +704,9 @@
 
 				var fragments = response.data.fragments;
 
-				$( document.body ).trigger( 'removed_from_wishlist', [ null, fragments ] );
+				$( document.body )
+					.trigger( 'removed_from_wishlist', [ null, fragments ] )
+					.trigger( 'wishlist_item_removed', [ response.data ] );
 			},
 			complete: function() {
 				unblock( $widget );

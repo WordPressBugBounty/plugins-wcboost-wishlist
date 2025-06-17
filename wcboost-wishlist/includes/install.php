@@ -11,6 +11,15 @@ defined( 'ABSPATH' ) || exit;
  */
 class Install {
 	/**
+	 * Upgrades and callbacks to run per version
+	 *
+	 * @var array
+	 */
+	private static $upgrades = [
+		'1.1.6' => 'WCBoost\Wishlist\Upgrade::upgrade_116'
+	];
+
+	/**
 	 * Init hooks
 	 *
 	 * @return void
@@ -28,7 +37,7 @@ class Install {
 	 * @return void
 	 */
 	public static function check_version() {
-		if ( version_compare( get_option( 'wcboost_wishlist_version' ), Plugin::instance()->version, '<' ) ) {
+		if ( version_compare( get_option( 'wcboost_wishlist_version' ), WCBOOST_WISHLIST_VERSION, '<' ) ) {
 			self::install();
 		}
 	}
@@ -52,6 +61,7 @@ class Install {
 		self::define_tables();
 		self::create_tables();
 		self::maybe_create_pages();
+		self::maybe_update();
 		self::update_version();
 		flush_rewrite_rules();
 
@@ -122,10 +132,12 @@ class Install {
 			user_id BIGINT UNSIGNED NOT NULL,
 			session_id VARCHAR(200) NULL,
 			date_created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+			date_modified datetime NULL DEFAULT NULL,
 			date_expires datetime NULL DEFAULT NULL,
 			is_default tinyint(1) NOT NULL DEFAULT '0',
 			PRIMARY KEY  (wishlist_id),
 			KEY user_id (user_id),
+			KEY session_id (session_id),
 			UNIQUE KEY wishlist_token (wishlist_token)
 		) $collate;
 		CREATE TABLE {$wpdb->wishlist_items} (
@@ -174,10 +186,31 @@ class Install {
 	}
 
 	/**
+	 * Check and run update callbacks
+	 *
+	 * @since 1.1.6
+	 */
+	public static function maybe_update() {
+		require_once __DIR__ . '/upgrade.php';
+
+		$db_version = get_option( 'wcboost_wishlist_version' );
+
+		foreach ( self::$upgrades as $version => $callback ) {
+			if ( version_compare( $db_version, $version, '>=' ) ) {
+				continue;
+			}
+
+			if ( is_callable( $callback ) ) {
+				call_user_func( $callback );
+			}
+		}
+	}
+
+	/**
 	 * Update plugin version to current
 	 */
 	public static function update_version() {
-		update_option( 'wcboost_wishlist_version', Plugin::instance()->version );
+		update_option( 'wcboost_wishlist_version', WCBOOST_WISHLIST_VERSION );
 	}
 
 	/**

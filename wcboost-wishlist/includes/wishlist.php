@@ -3,6 +3,8 @@ namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
+use WCBoost\Wishlist\Helper;
+
 /**
  * Wishlist Data
  */
@@ -24,6 +26,7 @@ class Wishlist extends \WC_Data {
 		'user_id'        => 0,
 		'session_id'     => '',
 		'date_created'   => '',
+		'date_modified'  => '',
 		'date_expires'   => '',
 		'is_default'     => false,
 	];
@@ -57,6 +60,20 @@ class Wishlist extends \WC_Data {
 	protected $cache_group = 'wishlists';
 
 	/**
+	 * Stores if the items have been read from the database.
+	 *
+	 * @var bool
+	 */
+	private $items_read = false;
+
+	/**
+	 * Total number of items in the wishlist.
+	 *
+	 * @var int
+	 */
+	protected $total_items = 0;
+
+	/**
 	 * Wishlist constructor. Loads wishlist data.
 	 *
 	 * @param mixed $data Wishlist data, object, ID or token.
@@ -69,6 +86,7 @@ class Wishlist extends \WC_Data {
 		// If we already have a wishlist object, read it again.
 		if ( $data instanceof self ) {
 			$this->set_id( absint( $data->get_wishlist_id() ) );
+			$this->set_wishlist_id( absint( $data->get_wishlist_id() ) );
 			$this->read_object_from_database();
 			return;
 		}
@@ -103,7 +121,7 @@ class Wishlist extends \WC_Data {
 
 		try {
 			$this->data_store->read( $this );
-			$this->data_store->read_items( $this );
+			$this->read_totlal_items();
 		} catch ( \Exception $e ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -126,8 +144,19 @@ class Wishlist extends \WC_Data {
 		$this->set_id( 0 );
 
 		if ( $this->get_wishlist_id() > 0 ) {
-			$this->data_store->read_items( $this );
+			$this->read_totlal_items();
 		}
+	}
+
+	/**
+	 * Get the total count of items in the wishlist from database.
+	 *
+	 * @since 1.1.6
+	 *
+	 * @return int
+	 */
+	public function read_totlal_items() {
+		$this->total_items = $this->get_data_store()->get_items_count( $this );
 	}
 
 	/**
@@ -136,6 +165,7 @@ class Wishlist extends \WC_Data {
 	protected function read_new_data() {
 		$this->set_user_id( get_current_user_id() );
 		$this->set_date_created( time() );
+		$this->set_date_modified( time() );
 
 		if ( ! is_user_logged_in() ) {
 			$this->set_date_expires( strtotime( '+30 days' ) );
@@ -233,6 +263,15 @@ class Wishlist extends \WC_Data {
 	 */
 	public function set_date_created( $date ) {
 		$this->set_date_prop( 'date_created', $date );
+	}
+
+	/**
+	 * Set modified date.
+	 *
+	 * @param string|integer|null $date UTC timestamp, or ISO 8601 DateTime. If the DateTime string has no timezone or offset, WordPress site timezone will be assumed. Null if there is no date.
+	 */
+	public function set_date_modified( $date ) {
+		$this->set_date_prop( 'date_modified', $date );
 	}
 
 	/**
@@ -354,6 +393,16 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
+	 * Get modified date
+	 *
+	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
+	 * @return WC_DateTime|NULL
+	 */
+	public function get_date_modified( $context = 'view' ) {
+		return $this->get_prop( 'date_modified', $context );
+	}
+
+	/**
 	 * Get expire date
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
@@ -436,6 +485,10 @@ class Wishlist extends \WC_Data {
 			return false;
 		}
 
+		if ( $this->has_item( $item ) ) {
+			return new \WP_Error( 'item_exists', esc_html__( 'This item already exists', 'wcboost-wishlist' ) );
+		}
+
 		$product = $item->get_product();
 
 		if ( ! $product || ! $product->exists() || ( 'publish' !== $product->get_status() && ! current_user_can( 'edit_post', $product->get_id() ) ) ) {
@@ -452,10 +505,6 @@ class Wishlist extends \WC_Data {
 			return false;
 		}
 
-		if ( $this->has_item( $item ) ) {
-			return new \WP_Error( 'item_exists', esc_html__( 'This item already exists', 'wcboost-wishlist' ) );
-		}
-
 		// Update the item data.
 		$item->set_wishlist_id( $this->get_wishlist_id() );
 
@@ -465,13 +514,14 @@ class Wishlist extends \WC_Data {
 
 		$this->items[ $item->get_item_key() ] = $item;
 
-		// Save to database.
+		// Save to database if this is a new item.
 		if ( ! $item->get_id() ) {
 			$item->save();
 			$this->save();
 		}
 
-		if ( ! $this->data_store->is_reading() ) {
+		// If this is not initial loading, trigger the action.
+		if ( ! $this->get_data_store()->is_reading() ) {
 			do_action( 'wcboost_wishlist_add_item', $item );
 		}
 
@@ -520,6 +570,11 @@ class Wishlist extends \WC_Data {
 			return new \WP_Error( 'no_permission', esc_html__( 'You are not allowed to edit the wishlist', 'wcboost-wishlist' ) );
 		}
 
+		// Load items if not already loaded.
+		if ( ! $this->get_items_read() ) {
+			$this->get_items();
+		}
+
 		$item_key = is_string( $item ) ? $item : $item->get_item_key();
 
 		if ( ! array_key_exists( $item_key, $this->removing_items ) ) {
@@ -554,8 +609,24 @@ class Wishlist extends \WC_Data {
 			return false;
 		}
 
+		// Always return false if the wishlist is empty.
+		if ( $this->is_empty() ) {
+			return false;
+		}
+
+		// If this initial loading, should return false to avoid race conditions and infinite loops.
+		if ( $this->get_data_store()->is_reading() ) {
+			return false;
+		}
+
+		// Ensure items are loaded.
+		if ( ! $this->get_items_read() ) {
+			$this->get_items();
+		}
+
 		$item_key = is_string( $item ) ? $item : $item->get_item_key();
 
+		// Only check the items array without loading items if they're not read yet
 		return array_key_exists( $item_key, $this->items );
 	}
 
@@ -579,6 +650,22 @@ class Wishlist extends \WC_Data {
 	 * @return Wishlist_Item[]
 	 */
 	public function get_items() {
+		if ( $this->get_items_read() ) {
+			return $this->items;
+		}
+
+		if ( $this->count_items() ) {
+			try {
+				$this->get_data_store()->read_items( $this );
+				$this->set_items_read( true );
+			} catch ( \Exception $e ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( 'Error loading wishlist items: ' . $e->getMessage() );
+				}
+			}
+		}
+
 		return $this->items;
 	}
 
@@ -588,7 +675,13 @@ class Wishlist extends \WC_Data {
 	 * @return int
 	 */
 	public function count_items() {
-		return count( $this->items );
+		// If items are already loaded, count from the items array
+		if ( $this->get_items_read() ) {
+			return count( $this->items );
+		}
+
+		// Otherwise use the total_items property which was loaded with the wishlist data
+		return $this->total_items;
 	}
 
 	/**
@@ -646,6 +739,8 @@ class Wishlist extends \WC_Data {
 	 * Also set the session id for guests.
 	 */
 	public function save() {
+		$this->set_date_modified( time() );
+
 		parent::save();
 
 		if ( ! is_user_logged_in() ) {
@@ -774,34 +869,36 @@ class Wishlist extends \WC_Data {
 	 *
 	 * @since 1.1.1
 	 * @since 1.1.2 Always generate the hash key. A fixed key is generated for temporary wishlists.
+	 * @since 1.1.6 Using the helper function and allow fillter hooks.
 	 *
 	 * @return string
 	 */
 	public function get_hash_key() {
-		$hash_key = '';
-
-		if ( $this->get_id() ) {
-			$hash_key = md5( get_current_blog_id() . '_' . $this->get_id() . '_' . $this->get_wishlist_token() );
-		} else {
-			// Generate a fixed hash for temporary wishlists.
-			$hash_key = md5( get_current_blog_id() . '_' . get_site_url( get_current_blog_id(), '/' ) . get_template() );
-		}
-
-		return $hash_key;
+		return Helper::get_wishlist_hash_key( $this );
 	}
 
 	/**
 	 * Get hash content for the wishlist.
 	 * For all temporary wishlists, the content is the same because all params are the same,
-	 * which are: { wishlist_token: '', items: [], count: 0 }
+	 * which are: { wishlist_token: '', date_modified: '', count: 0 }
 	 *
 	 * @since 1.1.1
 	 * @since 1.1.2 Always generate hash content
+	 * @since 1.1.6 Replace hash param `items` by `date_modified`
 	 *
 	 * @return string
 	 */
 	public function get_hash_content() {
-		$hash = md5( $this->get_wishlist_token() . wp_json_encode( $this->get_items() ) . $this->count_items() );
+		$token         = $this->get_wishlist_token();
+		$date_modified = $this->get_date_modified();
+		$count_items   = $this->count_items();
+
+		// With temporary wishlists, empty the `date_modified` to generate the same hash content.
+		if ( ! $this->get_id() ) {
+			$date_modified = '';
+		}
+
+		$hash = md5( $token . $date_modified . $count_items );
 
 		return apply_filters( 'wcboost_wishlist_hash', $hash, $this );
 	}
@@ -846,5 +943,23 @@ class Wishlist extends \WC_Data {
 		$this->data_store->set_is_reading( false );
 
 		return $merged_count;
+	}
+
+	/**
+	 * Set if items have been read from the database.
+	 *
+	 * @param bool $read
+	 */
+	public function set_items_read( $read = true ) {
+		$this->items_read = (bool) $read;
+	}
+
+	/**
+	 * Return if items have been read from the database.
+	 *
+	 * @return bool
+	 */
+	public function get_items_read() {
+		return (bool) $this->items_read;
 	}
 }

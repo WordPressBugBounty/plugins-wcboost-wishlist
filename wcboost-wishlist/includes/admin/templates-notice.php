@@ -6,13 +6,13 @@
  */
 namespace WCBoost\Wishlist\Admin;
 
-use WCBoost\Packages\TemplatesStatus\Notice as Templates_Status_Notice;
+use WCBoost\Packages\TemplatesStatus\Notice as TemplatesStatusNotice;
 use WCBoost\Wishlist\Plugin;
 
 /**
  * Admin/Notices class
  */
-class Templates_Notice extends Templates_Status_Notice {
+class Templates_Notice extends TemplatesStatusNotice {
 
 	/**
 	 * Class constructor

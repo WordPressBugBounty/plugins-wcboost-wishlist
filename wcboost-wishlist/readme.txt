@@ -1,12 +1,12 @@
 === WCBoost - Wishlist ===
 Contributors: wcboost
 Tags: woocommerce wishlist, wishlist, products, e-commerce, woocommerce
-Tested up to: 6.7
-Stable tag: 1.1.5
+Tested up to: 6.8.1
+Stable tag: 1.2.0
 Requires PHP: 7.0
 Requires at least: 4.5
 WC requires at least: 3.0.0
-WC tested up to: 9.3
+WC tested up to: 9.9.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -93,6 +93,33 @@ Following the standards of WordPress and WooCommerce, you can find all the setti
 6. Visual options can be found in the Customizer
 
 == Changelog ==
+
+= 1.2.0 =
+- New - Add the new constant `WCBOOST_WISHLIST_VERSION` for better version management.
+- Enhancement - Add transient caching for template status to improve performance.
+- Enhancement - Refactor template status methods for improved clarity and maintainability.
+- Enhancement - Refactor package loading architecture.
+- Fix - Resolve inconsistent hash content issues with temporary wishlists.
+- Fix - Implement try-catch in session handling to prevent fatal errors when wishlist is not found.
+- Fix - Resolve object cache refresh issues.
+- Fix - Correct default wishlist ID type from string to int.
+- Fix - Fix getting wrong default wishlist ID.
+- Tweak - Mark packages manager as deprecated in favor of new architecture.
+- Tweak - Improve get_items method to prevent unnecessary database calls for temporary wishlists.
+
+= 1.1.6 =
+- Enhancement - Add date_modified property to Wishlist class with proper database schema updates.
+- Enhancement - Improve wishlist hash content generation using date_modified for better cache invalidation.
+- Enhancement - Add wishlist hash key generation and translation functionality.
+- Enhancement - Apply filters when adding products to wishlists for better extensibility.
+- Fix - Resolve PHP fatal error with loop between has_item and add_item methods.
+- Fix - Fix editing wishlist URL not found issue.
+- Fix - Fix issue where removing items from widget doesn't update storage.
+- Fix - Resolve WPML compatibility issue when displaying products from default language.
+- Fix - Resolve PHP coding standards warnings.
+- Tweak - Update query variables and rewrite rules for better URL handling.
+- Tweak - Optimize item counting on initialization instead of reading all items.
+- Tweak - Remove unused product translation method.
 
 = 1.1.5 =
 - New - Add two new Elementor widgets: wishlist page and wishlist button.

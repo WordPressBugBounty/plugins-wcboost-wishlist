@@ -111,6 +111,6 @@ class Shortcodes {
 			$template = 'wishlist/wishlist-none.php';
 		}
 
-		return $template;
+		return apply_filters( 'wcboost_wishlist_template', $template, $wishlist );
 	}
 }

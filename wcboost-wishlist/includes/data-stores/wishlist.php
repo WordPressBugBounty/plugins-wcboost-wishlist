@@ -1,8 +1,9 @@
 <?php
 namespace WCBoost\Wishlist\DataStore;
-use WCBoost\Wishlist\Session;
 
 defined( 'ABSPATH' ) || exit;
+
+use WCBoost\Wishlist\Session;
 
 /**
  * Wishlist Data Store
@@ -58,6 +59,10 @@ class Wishlist {
 			$wishlist->set_date_created( time() );
 		}
 
+		if ( ! $wishlist->get_date_modified( 'edit' ) ) {
+			$wishlist->set_date_modified( time() );
+		}
+
 		if ( ! is_user_logged_in() ) {
 			$wishlist->set_date_expires( strtotime( '+30 days' ) );
 		}
@@ -72,6 +77,7 @@ class Wishlist {
 			'user_id'        => $wishlist->get_user_id(),
 			'session_id'     => $wishlist->get_session_id(),
 			'date_created'   => $wishlist->get_date_created()->format( 'Y-m-d H:i:s' ),
+			'date_modified'  => $wishlist->get_date_modified()->format( 'Y-m-d H:i:s' ),
 			'date_expires'   => $wishlist->get_date_expires(),
 			'is_default'     => $wishlist->get_is_default(),
 		];
@@ -125,9 +131,20 @@ class Wishlist {
 	public function update( &$wishlist ) {
 		global $wpdb;
 
-		$changes = $wishlist->get_changes();
+		$allowed_changes = array_intersect(
+			[
+				'wishlist_title',
+				'wishlist_slug',
+				'description',
+				'menu_order',
+				'status',
+				'date_modified',
+				'is_default',
+			],
+			array_keys( $wishlist->get_changes() )
+		);
 
-		if ( array_intersect( ['wishlist_title', 'wishlist_slug', 'description', 'menu_order', 'status', 'is_default'], array_keys( $changes ) ) ) {
+		if ( ! empty( $allowed_changes ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$wpdb->prefix . 'wcboost_wishlists',
@@ -137,6 +154,7 @@ class Wishlist {
 					'description'    => $wishlist->get_description( 'edit' ),
 					'menu_order'     => $wishlist->get_menu_order( 'edit' ),
 					'status'         => $wishlist->get_status( 'edit' ),
+					'date_modified'  => $wishlist->get_date_modified( 'edit' )->format( 'Y-m-d H:i:s' ),
 					'is_default'     => $wishlist->get_is_default( 'edit' ),
 				],
 				[
@@ -203,7 +221,7 @@ class Wishlist {
 		$token = $wishlist->get_wishlist_token();
 
 		if ( ! $id && ! $token ) {
-			throw new \Exception( esc_html__( 'Invalid wishlist.', 'wcboost-wishlist' ) );
+			throw new \Exception( esc_html__( 'Required wishlist ID or token.', 'wcboost-wishlist' ) );
 		}
 
 		// Get from cache if available.
@@ -225,7 +243,7 @@ class Wishlist {
 			}
 
 			if ( ! $data ) {
-				throw new \Exception( esc_html__( 'Invalid wishlist.', 'wcboost-wishlist' ) );
+				throw new \Exception( esc_html__( 'No wishlist found.', 'wcboost-wishlist' ) );
 			}
 
 			if ( $id ) {
@@ -246,6 +264,7 @@ class Wishlist {
 			'user_id'        => $data->user_id,
 			'session_id'     => $data->session_id,
 			'date_created'   => $data->date_created,
+			'date_modified'  => $data->date_modified,
 			'date_expires'   => $data->date_expires,
 			'is_default'     => $data->is_default,
 		] );
@@ -289,11 +308,37 @@ class Wishlist {
 			if ( $item->get_status() == 'trash' ) {
 				$wishlist->add_item_to_trash( $item );
 			} else {
-				$wishlist->add_item( $item, [ 'silence' => true ] );
+				$wishlist->add_item( $item );
 			}
 		}
 
 		$this->set_is_reading( false );
+	}
+
+	/**
+	 * Get the total count of items in a wishlist
+	 *
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @return int
+	 */
+	public function get_items_count( $wishlist ) {
+		$cache_key = 'wcboost-wishlist-items-count-' . $wishlist->get_wishlist_id( 'edit' );
+		$count     = wp_cache_get( $cache_key, 'wishlists' );
+
+		if ( false === $count ) {
+			global $wpdb;
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$count = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM {$wpdb->prefix}wcboost_wishlist_items WHERE wishlist_id = %d AND status = 'publish';",
+					$wishlist->get_wishlist_id( 'edit' )
+				)
+			);
+			wp_cache_set( $cache_key, $count, 'wishlists' );
+		}
+
+		return intval( $count );
 	}
 
 	/**
@@ -312,10 +357,11 @@ class Wishlist {
 			if ( false === $wishlist_id ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 				$wishlist_id = $wpdb->get_var( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE user_id = %d AND status != 'trash' AND is_default = 1 LIMIT 1;", [ get_current_user_id() ] ) );
-				$default_wishlist_id = absint( $wishlist_id );
 
-				wp_cache_set( 'wcboost-wishlist-default-' . get_current_user_id(), $default_wishlist_id, 'wishlists' );
+				wp_cache_set( 'wcboost-wishlist-default-' . get_current_user_id(), $wishlist_id, 'wishlists' );
 			}
+
+			$default_wishlist_id = absint( $wishlist_id );
 		} else {
 			$session_id = Session::get_session_id();
 
@@ -325,10 +371,11 @@ class Wishlist {
 				if ( false === $wishlist_id ) {
 					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 					$wishlist_id = $wpdb->get_var( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE session_id = %s AND status != 'trash' LIMIT 1;", [ $session_id ] ) );
-					$default_wishlist_id = absint( $wishlist_id );
 
-					wp_cache_set( 'wcboost-wishlist-default-' . $session_id, $default_wishlist_id, 'wishlists' );
+					wp_cache_set( 'wcboost-wishlist-default-' . $session_id, $wishlist_id, 'wishlists' );
 				}
+
+				$default_wishlist_id = absint( $wishlist_id );
 			}
 		}
 
@@ -505,6 +552,7 @@ class Wishlist {
 		if ( $wishlist->get_wishlist_id() ) {
 			wp_cache_delete( 'wcboost-wishlist-' . $wishlist->get_wishlist_id(), 'wishlists' );
 			wp_cache_delete( 'wcboost-wishlist-items-' . $wishlist->get_wishlist_id(), 'wishlists' );
+			wp_cache_delete( 'wcboost-wishlist-items-count-' . $wishlist->get_wishlist_id(), 'wishlists' );
 		} elseif ( $wishlist->get_wishlist_token() ) {
 			wp_cache_delete( 'wcboost-wishlist-' . $wishlist->get_wishlist_token(), 'wishlists' );
 		}

@@ -4,7 +4,7 @@
  * Description: Our WooCommerce Wishlist plugin enables customers to create personalized collections of products that they like but aren't ready to purchase immediately. Enhance the shopping experience by saving products for further consideration, making decisions easier than ever.
  * Plugin URI: https://wcboost.com/plugin/woocommerce-wishlist/?utm_source=wp-plugins&utm_campaign=plugin-uri&utm_medium=wp-dash
  * Author: WCBoost
- * Version: 1.1.5
+ * Version: 1.2.0
  * Author URI: https://wcboost.com/?utm_source=wp-plugins&utm_campaign=author-uri&utm_medium=wp-dash
  *
  * Text Domain: wcboost-wishlist
@@ -12,24 +12,27 @@
  *
  * Requires PHP: 7.0
  * Requires at least: 4.5
- * Tested up to: 6.7
+ * Tested up to: 6.8.1
  * WC requires at least: 3.0.0
- * WC tested up to: 9.3
+ * WC tested up to: 9.9.4
  * License: GPLv3 or later
  *
- * @package WCBoost
- * @category Wishlist
+ * @package Wishlist
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+define( 'WCBOOST_WISHLIST_VERSION', '1.2.0' );
 define( 'WCBOOST_WISHLIST_FREE', plugin_basename( __FILE__ ) );
 
 if ( ! defined( 'WCBOOST_WISHLIST_FILE' ) ) {
 	define( 'WCBOOST_WISHLIST_FILE', __FILE__ );
 }
+
+// Load packages.
+require_once __DIR__ . '/packages/autoload.php';
 
 if ( ! class_exists( '\WCBoost\Wishlist\Plugin' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/plugin.php';

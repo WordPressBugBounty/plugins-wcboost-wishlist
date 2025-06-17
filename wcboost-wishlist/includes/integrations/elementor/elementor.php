@@ -6,7 +6,6 @@ namespace WCBoost\Wishlist\Integrations\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 
-use \WCBoost\Wishlist\Plugin;
 use \WCBoost\Wishlist\Frontend;
 use \WCBoost\Wishlist\Integrations\Integration_Interface;
 
@@ -60,7 +59,7 @@ class Elementor implements Integration_Interface {
 			'wcboost-wishlist-elementor-editor',
 			plugin_dir_url( WCBOOST_WISHLIST_FILE ) . 'assets/css/elementor-editor.css',
 			[],
-			Plugin::instance()->version
+			WCBOOST_WISHLIST_VERSION
 		);
 	}
 

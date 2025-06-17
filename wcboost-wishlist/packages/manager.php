@@ -2,15 +2,21 @@
 /**
  * Packages manager
  *
- * @version 1.0.1
+ * @deprecated 2.0.0 Use direct class autoloading instead.
+ * @package WCBoost\Packages
  */
+
 namespace WCBoost\Packages;
 
 /**
- * Class WCBoost\Packages\Manager
+ * Class Manager
+ *
+ * @deprecated 2.0.0 Use direct class autoloading instead.
+ * Example:
+ * Instead of: new Manager()->load_package('utilities\singleton-trait');
+ * Use: use WCBoost\Packages\Utilities\SingletonTrait;
  */
 class Manager {
-
 	/**
 	 * Loaded packages
 	 *
@@ -26,111 +32,112 @@ class Manager {
 	protected $base;
 
 	/**
+	 * Package name mapping for backward compatibility
+	 *
+	 * @var array
+	 */
+	protected $package_map = [
+		'utilities\singleton-trait' => ['Utilities\\SingletonTrait'],
+		'templates-status' => ['TemplatesStatus\\Status', 'TemplatesStatus\\Notice'],
+		'admin-page' => ['AdminPage\\WCBoostAdmin', 'AdminPage\\Section'],
+		'subscription-client' => ['SubscriptionClient\\Updater', 'SubscriptionClient\\Activation'],
+	];
+
+	/**
 	 * Packages manager constructor
 	 *
+	 * @deprecated 2.0.0 Use direct class autoloading instead.
 	 * @param string $dir The base directory path
 	 */
-	public function __construct( $dir ) {
+	public function __construct( $dir = __DIR__ ) {
 		$this->base = untrailingslashit( $dir );
-
-		$this->load_package( 'utilities\singleton-trait' );
+		$this->deprecated_notice();
 	}
 
 	/**
 	 * Loads and initializes the package
 	 *
-	 * @param  string $name The package name
-	 *
+	 * @deprecated 2.0.0 Use direct class autoloading instead.
+	 * @param string $name The package name
 	 * @return void
 	 */
 	public function load_package( $name ) {
-		$files   = [];
-		$package = strtolower( $name );
+		if ( ! isset( $this->package_map[$name] ) ) {
+			return;
+		}
 
+		// Package already loaded
 		if ( array_key_exists( $name, static::$packages ) ) {
 			return;
 		}
 
-		switch ( $package ) {
-			case 'utilities\singleton-trait':
-				if ( ! trait_exists( 'WCBoost\Packages\Utilities\Singleton_Trait' ) ) {
-					$files[] = $this->base . '/utilities/singleton-trait.php';
-				}
-				break;
-
-			case 'templates-status':
-				if ( ! trait_exists( 'WCBoost\Packages\TemplatesStatus\Templates_Trait' ) ) {
-					$files[] = $this->base . '/templates-status/templates-trait.php';
-				}
-
-				if ( ! class_exists( 'WCBoost\Packages\TemplatesStatus\Notice' ) ) {
-					$files[] =  $this->base . '/templates-status/notice.php';
-				}
-
-				if ( ! class_exists( 'WCBoost\Packages\TemplatesStatus\Status' ) ) {
-					$files[] =  $this->base . '/templates-status/status.php';
-				}
-				break;
-		}
-
-		foreach ( $files as $file ) {
-			if ( ! file_exists( $file ) ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( "Missing the package file of `$package`: $file" );
-				}
-
-				continue;
+		// Load all classes in the package
+		foreach ( $this->package_map[$name] as $class ) {
+			$full_class = 'WCBoost\\Packages\\' . $class;
+			if ( ! class_exists( $full_class ) ) {
+				$this->deprecated_notice();
 			}
-
-			include_once( $file );
-
-			static::$packages[ $package ] = null;
 		}
 
-		$this->init_package( $package );
-	}
-
-	/**
-	 * Initializes the package
-	 *
-	 * @param  string $name
-	 *
-	 * @return void
-	 */
-	public function init_package( $name ) {
-		switch ( $name ) {
-			case 'templates-status':
-				static::$packages[ $name ] = \WCBoost\Packages\TemplatesStatus\Status::instance();
-				break;
-		}
+		static::$packages[$name] = true;
 	}
 
 	/**
 	 * Get package instance
 	 *
-	 * @since  1.0.1
-	 *
-	 * @param  string $name
-	 *
+	 * @deprecated 2.0.0 Use direct class instantiation instead.
+	 * @param string $name
 	 * @return mixed|null
 	 */
 	public function get( $name ) {
+		$this->deprecated_notice();
 		return static::package( $name );
 	}
 
 	/**
 	 * Get the package instance
 	 *
-	 * @param  string $name
-	 *
+	 * @deprecated 2.0.0 Use direct class instantiation instead.
+	 * @param string $name
 	 * @return mixed|null
 	 */
 	public static function package( $name ) {
-		if ( array_key_exists( $name, self::$packages ) ) {
-			return self::$packages[ $name ];
+		if ( ! isset( static::$packages[$name] ) ) {
+			return null;
+		}
+
+		// Map old package names to their main class
+		$class_map = [
+			'templates-status' => 'WCBoost\\Packages\\TemplatesStatus\\Status',
+			'admin-page' => 'WCBoost\\Packages\\AdminPage\\WCBoostAdmin',
+			'subscription-client' => 'WCBoost\\Packages\\SubscriptionClient\\Activation',
+		];
+
+		if ( isset( $class_map[$name] ) && class_exists( $class_map[$name] ) ) {
+			return call_user_func( [$class_map[$name], 'instance'] );
 		}
 
 		return null;
+	}
+
+	/**
+	 * Show deprecation notice
+	 */
+	protected function deprecated_notice() {
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+			return;
+		}
+
+		$trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 2 );
+		$caller = isset( $trace[1]['function'] ) ? $trace[1]['function'] : '';
+
+		trigger_error(
+			sprintf(
+				'%s is deprecated since version 2.0.0! Use direct class autoloading instead. Called from %s',
+				$caller ? "Method '$caller'" : 'The Manager class',
+				isset( $trace[1]['file'] ) ? $trace[1]['file'] . ':' . $trace[1]['line'] : 'unknown location'
+			),
+			E_USER_DEPRECATED
+		);
 	}
 }
