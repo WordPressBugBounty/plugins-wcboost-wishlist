@@ -112,10 +112,10 @@ class Query {
 		$stored_hash = get_option( 'wcboost_wishlist_rewrite_rules_hash' );
 
 		if ( $stored_hash !== $rules_hash ) {
-			$current_rules = get_option( 'rewrite_rules', [] );
+			$current_rules = get_option( 'rewrite_rules' );
 
 			// Only flush if there are actual differences
-			if ( ! empty( array_diff( array_keys( $rewrite_rules ), array_keys( $current_rules ) ) ) ) {
+			if ( ! is_array( $current_rules ) || ! empty( array_diff( array_keys( $rewrite_rules ), array_keys( $current_rules ) ) ) ) {
 				flush_rewrite_rules();
 			}
 

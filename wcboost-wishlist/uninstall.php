@@ -27,7 +27,8 @@ function uninstall() {
 	// Plugin options to remove.
 	$options = [
 		'wcboost_wishlist_version',
-		'wcboost_wishlist_db_version'
+		'wcboost_wishlist_db_version',
+		'wcboost_wishlist_rewrite_rules_hash',
 	];
 
 	// Delete options.

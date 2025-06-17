@@ -2,7 +2,7 @@
 Contributors: wcboost
 Tags: woocommerce wishlist, wishlist, products, e-commerce, woocommerce
 Tested up to: 6.8.1
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 Requires PHP: 7.0
 Requires at least: 4.5
 WC requires at least: 3.0.0
@@ -93,6 +93,9 @@ Following the standards of WordPress and WooCommerce, you can find all the setti
 6. Visual options can be found in the Customizer
 
 == Changelog ==
+
+= 1.2.1 =
+- Fix - Resolve fatal error when activating the plugin.
 
 = 1.2.0 =
 - New - Add the new constant `WCBOOST_WISHLIST_VERSION` for better version management.
