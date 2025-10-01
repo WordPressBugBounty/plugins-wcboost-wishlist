@@ -1,16 +1,19 @@
 <?php
 /**
  * Integrate with Elementor
+ *
+ * @package WCBoost\Wishlist
  */
+
 namespace WCBoost\Wishlist\Integrations\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 
-use \WCBoost\Wishlist\Frontend;
-use \WCBoost\Wishlist\Integrations\Integration_Interface;
+use WCBoost\Wishlist\Frontend;
+use WCBoost\Wishlist\Integrations\Integration_Interface;
 
 /**
- * Class Elementor Integration
+ * Class \WCBoost\Wishlist\Integrations\Elementor\Elementor
  */
 class Elementor implements Integration_Interface {
 
@@ -66,7 +69,7 @@ class Elementor implements Integration_Interface {
 	/**
 	 * Add category
 	 *
-	 * @param  \Elementor\Elements_Manager $elements_manager
+	 * @param \Elementor\Elements_Manager $elements_manager Elements manager.
 	 */
 	public function register_category( $elements_manager ) {
 		$elements_manager->add_category(
@@ -80,7 +83,7 @@ class Elementor implements Integration_Interface {
 	/**
 	 * Register widgets
 	 *
-	 * @param \Elementor\Widgets_Manager $widgets_manager
+	 * @param \Elementor\Widgets_Manager $widgets_manager Widgets manager.
 	 */
 	public function register_widgets( $widgets_manager ) {
 		require_once __DIR__ . '/wishlist-widget.php';

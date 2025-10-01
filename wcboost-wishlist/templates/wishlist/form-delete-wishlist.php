@@ -6,7 +6,7 @@
  *
  * @author  WCBoost
  * @package WCBoost\Wishlist\Templates
- * @version 1.0
+ * @version 1.2.2
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -18,7 +18,7 @@ if ( ! isset( $wishlist ) ) {
 ?>
 <form class="wcboost-wishlist-form-delete" method="post" action="<?php echo esc_url( wc_get_page_permalink( 'wishlist' ) ); ?>">
 	<?php if ( ! empty( $title ) ) : ?>
-		<h4 class="wcboost-wishlist-form-delete__title"><?php echo esc_html( $title ); ?></h4>
+		<p class="wcboost-wishlist-form-delete__title"><strong><?php echo esc_html( $title ); ?></strong></p>
 	<?php endif; ?>
 
 	<?php if ( ! empty( $message ) ) : ?>
@@ -27,11 +27,11 @@ if ( ! isset( $wishlist ) ) {
 
 	<?php do_action( 'wcboost_wishlist_after_delete_form', $wishlist ); ?>
 
-	<?php if ( ! $wishlist->is_default() ) : ?>
+	<?php if ( $wishlist->can_delete() ) : ?>
 		<button type="submit" class="button" name="delete_wishlist" value="<?php esc_attr_e( 'Delete wishlist', 'wcboost-wishlist' ); ?>"><?php esc_html_e( 'Delete wishlist', 'wcboost-wishlist' ); ?></button>
 
 		<?php wp_nonce_field( 'wcboost-wishlist-delete' ); ?>
-		<input type="hidden" name="wishlist_id" value="<?php echo esc_attr( $wishlist->get_id() ); ?>" />
-		<input type="hidden" name="action" value="delete_wishlist" />
+		<input type="hidden" name="wishlist_id" value="<?php echo esc_attr( $wishlist->get_id() ); ?>" autocomplete="off" />
+		<input type="hidden" name="action" value="delete_wishlist" autocomplete="off"/>
 	<?php endif; ?>
 </form>

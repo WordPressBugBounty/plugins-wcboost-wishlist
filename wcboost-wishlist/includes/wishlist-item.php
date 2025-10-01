@@ -1,10 +1,18 @@
 <?php
+/**
+ * Wishlist item data
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Wishlist Item Data
+ * Class \WCBoost\Wishlist\Wishlist_Item
  */
 class Wishlist_Item extends \WC_Data {
 	/**
@@ -14,7 +22,7 @@ class Wishlist_Item extends \WC_Data {
 	 */
 	protected $data = [
 		'item_id'      => '',
-		'status'       => 'publish', // publish, trash
+		'status'       => 'publish', // publish, trash.
 		'item_key'     => '',
 		'product_id'   => 0,
 		'variation_id' => 0,
@@ -137,7 +145,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set item id
 	 *
-	 * @param int $id
+	 * @param int $id Item ID.
 	 */
 	public function set_item_id( $id ) {
 		$this->set_prop( 'item_id', absint( $id ) );
@@ -146,7 +154,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set item key
 	 *
-	 * @param int $id
+	 * @param int $id Item key.
 	 */
 	public function set_item_key( $key ) {
 		$this->set_prop( 'item_key', $key );
@@ -155,7 +163,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set product id
 	 *
-	 * @param int $id
+	 * @param int $id Product ID.
 	 */
 	public function set_product_id( $id ) {
 		$this->set_prop( 'product_id', absint( $id ) );
@@ -164,7 +172,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set variation id
 	 *
-	 * @param int $id
+	 * @param int $id Variation ID.
 	 */
 	public function set_variation_id( $id ) {
 		$this->set_prop( 'variation_id', absint( $id ) );
@@ -173,7 +181,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set item status
 	 *
-	 * @param string $status The item status: publish, trash
+	 * @param string $status The item status: publish, trash.
 	 */
 	public function set_status( $status ) {
 		$this->set_prop( 'status', in_array( $status, [ 'publish', 'trash' ] ) ? $status : 'publish' );
@@ -182,7 +190,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set quantity
 	 *
-	 * @param int $quantity
+	 * @param int $quantity Quantity.
 	 */
 	public function set_quantity( $quantity ) {
 		$this->set_prop( 'quantity', max( intval( $quantity ), 0 ) );
@@ -191,7 +199,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set wishlist id
 	 *
-	 * @param int $id
+	 * @param int $id Wishlist ID.
 	 */
 	public function set_wishlist_id( $id ) {
 		$this->set_prop( 'wishlist_id', absint( $id ) );
@@ -200,7 +208,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set added date
 	 *
-	 * @param string|int $date
+	 * @param string|int $date Added date.
 	 */
 	public function set_date_added( $date ) {
 		$this->set_date_prop( 'date_added', $date );
@@ -209,7 +217,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set added expires
 	 *
-	 * @param string|int $date
+	 * @param string|int $date Expires date.
 	 */
 	public function set_date_expires( $date ) {
 		$this->set_date_prop( 'date_expires', $date );
@@ -289,7 +297,7 @@ class Wishlist_Item extends \WC_Data {
 	 * Get added date
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return WC_DateTime|NULL
+	 * @return \WC_DateTime|null
 	 */
 	public function get_date_added( $context = 'view' ) {
 		return $this->get_prop( 'date_added', $context );
@@ -299,7 +307,7 @@ class Wishlist_Item extends \WC_Data {
 	 * Get expries date
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return WC_DateTime|NULL
+	 * @return \WC_DateTime|null
 	 */
 	public function get_date_expires( $context = 'view' ) {
 		return $this->get_prop( 'date_expires', $context );
@@ -402,7 +410,7 @@ class Wishlist_Item extends \WC_Data {
 			add_query_arg(
 				[
 					'remove-wishlist-item' => $this->get_item_key(),
-					'_wpnonce' => wp_create_nonce( 'wcboost-wishlist-remove-item' )
+					'_wpnonce'             => wp_create_nonce( 'wcboost-wishlist-remove-item' ),
 				],
 				is_feed() || is_404() ? $this->get_product()->get_permalink() : ''
 			)
@@ -418,10 +426,13 @@ class Wishlist_Item extends \WC_Data {
 	 */
 	public function get_restore_url() {
 		$referer = is_feed() || is_404() ? $this->get_product()->get_permalink() : '';
-		$url     = add_query_arg( [
-			'undo-wishlist-item' => $this->get_item_key(),
-			'_wpnonce' => wp_create_nonce( 'wcboost-wishlist-restore-item' )
-		], $referer );
+		$url     = add_query_arg(
+			[
+				'undo-wishlist-item' => $this->get_item_key(),
+				'_wpnonce'           => wp_create_nonce( 'wcboost-wishlist-restore-item' ),
+			],
+			$referer
+		);
 
 		return apply_filters( 'wcboost_wishlist_remove_from_wishlist_url', $url, $this );
 	}

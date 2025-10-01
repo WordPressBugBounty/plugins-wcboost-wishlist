@@ -1,10 +1,16 @@
 <?php
+/**
+ * Wishlist item data store
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist\DataStore;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Wishlist Item Data Store
+ * Class \WCBoost\Wishlist\DataStore\Wishlist_Item
  */
 class Wishlist_Item {
 
@@ -12,7 +18,7 @@ class Wishlist_Item {
 	 * Method to create a new wishlist item in the database
 	 *
 	 * @global wpdb $wpdb
-	 * @param \WCBoost\Wishlist\Wishlist_Item $item
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Wishlist item.
 	 */
 	public function create( &$item ) {
 		global $wpdb;
@@ -78,7 +84,7 @@ class Wishlist_Item {
 	 * @since 1.0.0
 	 *
 	 * @global wpdb $wpdb
-	 * @param \WCBoost\Wishlist\Wishlist_Item $item
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Wishlist item.
 	 */
 	public function update( &$item ) {
 		global $wpdb;
@@ -112,8 +118,8 @@ class Wishlist_Item {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist_Item $item Wishlist object
-	 * @param array    $args Array of args to pass to the delete method.
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Wishlist item.
+	 * @param array                           $args Array of args to pass to the delete method.
 	 */
 	public function delete( &$item, $args = [] ) {
 		if ( ! $item->get_item_id() ) {
@@ -199,8 +205,9 @@ class Wishlist_Item {
 	/**
 	 * Generate the item key tokens
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist_Item $item
-	 * @return string|bool
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Wishlist item.
+	 *
+	 * @return string|bool Item key.
 	 */
 	public function generate_item_key( $item ) {
 		$product_id   = $item->get_product_id();
@@ -220,7 +227,7 @@ class Wishlist_Item {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Wishlist $wishlist Wishlist object
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Wishlist item.
 	 */
 	public function clear_cache( &$item ) {
 		if ( $item->get_item_id() ) {

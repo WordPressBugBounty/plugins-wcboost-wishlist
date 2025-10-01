@@ -1,8 +1,19 @@
 <?php
+/**
+ * Helper functions
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Class \WCBoost\Wishlist\Helper
+ */
 class Helper {
 
 	/**
@@ -357,7 +368,7 @@ class Helper {
 		] );
 
 		echo '<div class="wcboost-wishlist-widget-content">';
-		wc_get_template( 'wishlist/wishlist-widget.php', $args, '', Plugin::instance()->plugin_path() . '/templates/' );
+		Templates::load_template( 'wishlist/wishlist-widget.php', $args );
 		echo '</div>';
 	}
 }

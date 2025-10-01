@@ -1,8 +1,19 @@
 <?php
+/**
+ * Handle form actions
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Class \WCBoost\Wishlist\Form_Handler
+ */
 class Form_Handler {
 	/**
 	 * Hook in methods.
@@ -12,7 +23,8 @@ class Form_Handler {
 		add_action( 'wp_loaded', [ __CLASS__, 'remove_item_action' ], 20 );
 		add_action( 'wp_loaded', [ __CLASS__, 'restore_item_action' ], 20 );
 		add_action( 'wp_loaded', [ __CLASS__, 'update_wishlist' ], 20 );
-		add_action( 'wp_loaded', [ __CLASS__, 'delete_wishlist' ], 20 );
+		add_action( 'wp_loaded', [ __CLASS__, 'remove_wishlist_action' ], 20 );
+		add_action( 'wp_loaded', [ __CLASS__, 'restore_wishlist_action' ], 20 );
 		add_action( 'wp_loaded', [ __CLASS__, 'merge_guest_wishlist' ], 20 );
 		add_action( 'wp_loaded', [ __CLASS__, 'ignore_merge_guest_wishlist' ], 20 );
 
@@ -182,7 +194,6 @@ class Form_Handler {
 
 			wc_add_notice( $message, 'error' );
 		}
-
 	}
 
 	/**
@@ -296,40 +307,109 @@ class Form_Handler {
 
 		wc_add_notice( __( 'Wishlist updated', 'wcboost-wishlist' ) );
 
-		$referer = wp_get_referer() ? remove_query_arg( [ 'undo-wishlist-item', 'removed-wishlist-item', '_wpnonce' ], wp_get_referer() ) : wc_get_page_permalink( 'wishlist' );
+		$referer = wp_get_referer() ? remove_query_arg( [ 'undo-wishlist-item', 'removed-wishlist-item', '_wpnonce' ], wp_get_referer() ) : $wishlist->get_public_url();
 		wp_safe_redirect( $referer );
 		exit;
 	}
 
 	/**
-	 * Delete wishlist action
+	 * Remove wishlist action
 	 */
-	public static function delete_wishlist() {
-		if ( ( isset( $_POST['action'] ) && 'delete_wishlist' != $_POST['action'] ) || ! isset( $_POST['delete_wishlist'] ) ) {
-			return;
-		}
-
-		if ( empty( $_POST['wishlist_id'] ) || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'wcboost-wishlist-delete' ) ) {
+	public static function remove_wishlist_action() {
+		if ( empty( $_GET['remove-wishlist'] ) || empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'wcboost-wishlist-remove' ) ) {
 			return;
 		}
 
 		wc_nocache_headers();
 
-		$wishlist_id = absint( $_POST['wishlist_id'] );
-		$wishlist    = Helper::get_wishlist( $wishlist_id );
+		$token    = sanitize_text_field( wp_unslash( $_GET['remove-wishlist'] ) );
+		$wishlist = Helper::get_wishlist( $token );
+		$referer  = wp_get_referer() ? remove_query_arg( [ 'action', 'remove-wishlist', 'untrash-wishlist', '_wpnonce' ], wp_get_referer() ) : wc_get_page_permalink( 'wishlist' );
 
-		if ( ! $wishlist->can_edit() ) {
+		if ( ! $wishlist->get_id() || ! $wishlist->can_delete() ) {
+			if ( $wishlist->is_default() ) {
+				wc_add_notice( __( 'You cannot delete the default wishlist', 'wcboost-wishlist' ), 'error' );
+			} else {
+				wc_add_notice( __( 'You cannot delete this wishlist', 'wcboost-wishlist' ), 'error' );
+			}
+
+			wp_safe_redirect( $referer );
+			exit;
+		}
+
+		if ( $wishlist->trash() ) {
+			if ( wc_string_to_bool( get_option( 'wcboost_wishlist_page_show_title', 'no' ) ) ) {
+				$message = sprintf(
+					/* translators: %s: wishlist title */
+					__( 'The wishlist "%s" is deleted', 'wcboost-wishlist' ),
+					$wishlist->get_wishlist_title()
+				);
+			} else {
+				$message = __( 'The wishlist is deleted', 'wcboost-wishlist' );
+			}
+
+			$message .= ' <a href="' . esc_url( $wishlist->get_restore_url() ) . '" class="restore-wishlist-link">' . esc_html__( 'Undo?', 'wcboost-wishlist' ) . '</a>';
+
+			wc_add_notice( $message, 'success' );
+
+			/**
+			 * Filter the redirect URL after deleting a wishlist.
+			 *
+			 * @since 1.2.2
+			 *
+			 * @param string $referer The redirect URL.
+			 * @param \WCBoost\Wishlist\Wishlist $wishlist The wishlist object.
+			 */
+			$referer = apply_filters( 'wcboost_wishlist_remove_wishlist_redirect', wc_get_page_permalink( 'shop' ), $wishlist );
+			wp_safe_redirect( $referer );
+			exit;
+		}
+
+		wc_add_notice( __( 'Failed to delete the wishlist', 'wcboost-wishlist' ), 'error' );
+
+		wp_safe_redirect( $referer );
+		exit;
+	}
+
+	/**
+	 * Restore a wishlist action
+	 *
+	 * @since 1.2.2
+	 */
+	public static function restore_wishlist_action() {
+		if ( empty( $_GET['untrash-wishlist'] ) || empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'wcboost-wishlist-untrash' ) ) {
 			return;
 		}
 
-		if ( $wishlist->is_default() ) {
-			wc_add_notice( __( 'You cannot delete the default wishlist', 'wcboost-wishlist' ), 'error' );
-		} else {
-			$wishlist->trash();
-			wc_add_notice( __( 'Wishlist deleted', 'wcboost-wishlist' ) );
+		wc_nocache_headers();
+
+		$token    = sanitize_text_field( wp_unslash( $_GET['untrash-wishlist'] ) );
+		$wishlist = Helper::get_wishlist( $token );
+
+		if ( ! $wishlist->get_id()  ) {
+			return;
 		}
 
-		$referer = wc_get_page_permalink( 'shop' );
+		if ( $wishlist->restore() ) {
+			wc_add_notice( __( 'The wishlist is restored', 'wcboost-wishlist' ), 'success' );
+
+			/**
+			 * Filter the redirect URL after restoring a wishlist.
+			 *
+			 * @since 1.2.2
+			 *
+			 * @param string $referer The redirect URL.
+			 * @param \WCBoost\Wishlist\Wishlist $wishlist The wishlist object.
+			 */
+			$referer = apply_filters( 'wcboost_wishlist_restore_wishlist_redirect', $wishlist->get_public_url(), $wishlist );
+
+			wp_safe_redirect( $referer );
+			exit;
+		}
+
+		wc_add_notice( __( 'Failed to restore the wishlist', 'wcboost-wishlist' ), 'error' );
+
+		$referer = wp_get_referer() ? remove_query_arg( [ 'untrash-wishlist', '_wpnonce' ], wp_get_referer() ) : wc_get_page_permalink( 'shop' );
 		wp_safe_redirect( $referer );
 		exit;
 	}

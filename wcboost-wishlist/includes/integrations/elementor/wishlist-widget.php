@@ -1,15 +1,23 @@
 <?php
+/**
+ * Wishlist widget
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist\Integrations\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 
-use \Elementor\Widget_Base;
+use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
-use \WCBoost\Wishlist\Plugin;
-use \WCBoost\Wishlist\Helper;
-use \WCBoost\Wishlist\Shortcodes;
+use WCBoost\Wishlist\Helper;
+use WCBoost\Wishlist\Templates;
 
+/**
+ * Class \WCBoost\Wishlist\Integrations\Elementor\Wishlist_Widget
+ */
 class Wishlist_Widget extends Widget_Base {
 
 	/**
@@ -45,7 +53,7 @@ class Wishlist_Widget extends Widget_Base {
 	 * @return array Widget categories.
 	 */
 	public function get_categories() {
-		return ['wcboost'];
+		return [ 'wcboost' ];
 	}
 
 	/**
@@ -176,7 +184,7 @@ class Wishlist_Widget extends Widget_Base {
 		);
 
 		$wishlist = Helper::get_wishlist( get_query_var( 'wishlist_token' ) );
-		$template = Shortcodes::get_wishlist_template( $wishlist );
+		$template = Templates::get_wishlist_template( $wishlist );
 		$args     = [
 			'wishlist'   => $wishlist,
 			'return_url' => apply_filters( 'wcboost_wishlist_return_to_shop_redirect', wc_get_page_permalink( 'shop' ) ),
@@ -185,7 +193,7 @@ class Wishlist_Widget extends Widget_Base {
 		$args = apply_filters( 'wcboost_wishlist_template_args', $args, $wishlist );
 		?>
 		<div <?php $this->print_render_attribute_string( 'wrapper' ); ?>>
-			<?php wc_get_template( $template, $args, '', Plugin::instance()->plugin_path() . '/templates/' ); ?>
+			<?php Templates::load_template( $template, $args ); ?>
 		</div>
 		<?php
 	}

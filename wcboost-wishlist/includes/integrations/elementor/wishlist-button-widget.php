@@ -1,13 +1,22 @@
 <?php
+/**
+ * Wishlist button widget
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist\Integrations\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 
-use \Elementor\Widget_Base;
-use \Elementor\Controls_Manager;
+use Elementor\Widget_Base;
+use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
-use \WCBoost\Wishlist\Shortcodes;
+use WCBoost\Wishlist\Shortcodes;
 
+/**
+ * Class \WCBoost\Wishlist\Integrations\Elementor\Wishlist_Button_Widget
+ */
 class Wishlist_Button_Widget extends Widget_Base {
 	/**
 	 * Get widget name.

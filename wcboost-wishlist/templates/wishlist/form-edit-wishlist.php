@@ -6,7 +6,7 @@
  *
  * @author  WCBoost
  * @package WCBoost\Wishlist\Templates
- * @version 1.0
+ * @version 1.2.2
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -21,7 +21,7 @@ do_action( 'wcboost_wishlist_before_edit_form', $wishlist ); ?>
 	<h3><?php esc_html_e( 'Edit Wishlist', 'wcboost-wishlist' ); ?></h3>
 
 	<?php
-	if (  wc_string_to_bool( get_option( 'wcboost_wishlist_page_show_title', 'no' ) ) ) {
+	if ( $show_title_field ) {
 		woocommerce_form_field(
 			'wishlist_title',
 			[
@@ -33,7 +33,7 @@ do_action( 'wcboost_wishlist_before_edit_form', $wishlist ); ?>
 		);
 	}
 
-	if ( wc_string_to_bool( get_option( 'wcboost_wishlist_page_show_desc', 'no' ) ) ) {
+	if ( $show_desc_field ) {
 		woocommerce_form_field(
 			'wishlist_description',
 			[
@@ -67,12 +67,16 @@ do_action( 'wcboost_wishlist_before_edit_form', $wishlist ); ?>
 
 	<?php do_action( 'wcboost_wishlist_edit_form' ); ?>
 
-	<p>
-		<?php wp_nonce_field( 'wcboost-wishlist-update' ); ?>
+	<div class="wcboost-wishlist-form-edit-actions">
 		<button type="submit" class="button alt" name="update_wishlist" value="<?php esc_attr_e( 'Save changes', 'wcboost-wishlist' ); ?>"><?php esc_html_e( 'Save changes', 'wcboost-wishlist' ); ?></button>
-		<input type="hidden" name="action" value="update_wishlist" />
-		<input type="hidden" name="wishlist_id" value="<?php echo esc_attr( $wishlist->get_id() ); ?>" />
-	</p>
+		<a href="<?php echo esc_url( $wishlist->get_public_url() ); ?>" class="button" rel="nofollow"><?php esc_html_e( 'Cancel', 'wcboost-wishlist' ); ?></a>
+
+		<?php do_action( 'wcboost_wishlist_edit_form_actions', $wishlist ); ?>
+	</div>
+
+	<?php wp_nonce_field( 'wcboost-wishlist-update' ); ?>
+	<input type="hidden" name="action" value="update_wishlist" />
+	<input type="hidden" name="wishlist_id" value="<?php echo esc_attr( $wishlist->get_id() ); ?>" />
 </form>
 
 <?php do_action( 'wcboost_wishlist_after_edit_form', $wishlist ); ?>

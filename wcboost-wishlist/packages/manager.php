@@ -124,6 +124,7 @@ class Manager {
 	 * Show deprecation notice
 	 */
 	protected function deprecated_notice() {
+		// phpcs:disable
 		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
 			return;
 		}
@@ -139,5 +140,6 @@ class Manager {
 			),
 			E_USER_DEPRECATED
 		);
+		// phpcs:enable
 	}
 }

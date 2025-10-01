@@ -1,8 +1,19 @@
 <?php
+/**
+ * Ajax handler
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Class \WCBoost\Wishlist\Ajax_Handler
+ */
 class Ajax_Handler {
 	/**
 	 * Initialize

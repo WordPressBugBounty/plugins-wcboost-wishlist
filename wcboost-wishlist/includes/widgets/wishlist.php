@@ -1,4 +1,12 @@
 <?php
+/**
+ * Wishlist widget
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist\Widget;
 
 defined( 'ABSPATH' ) || exit;
@@ -6,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 use WCBoost\Wishlist\Helper;
 
 /**
- * Widget compare products class
+ * Class \WCBoost\Wishlist\Widget\Wishlist
  */
 class Wishlist extends \WC_Widget {
 	/**

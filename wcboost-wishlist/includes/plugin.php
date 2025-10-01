@@ -1,10 +1,18 @@
 <?php
+/**
+ * Plugin main class
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Plugin main class
+ * Class \WCBoost\Wishlist\Plugin
  */
 final class Plugin {
 
@@ -124,6 +132,7 @@ final class Plugin {
 	 */
 	protected function includes() {
 		include_once __DIR__ . '/helper.php';
+		include_once __DIR__ . '/templates.php';
 		include_once __DIR__ . '/install.php';
 		include_once __DIR__ . '/session.php';
 		include_once __DIR__ . '/query.php';

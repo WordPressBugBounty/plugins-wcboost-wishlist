@@ -1,10 +1,18 @@
 <?php
+/**
+ * Upgrade handler
+ *
+ * @version 1.1.6
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Upgrade handler class
+ * Class \WCBoost\Wishlist\Upgrade
  */
 class Upgrade {
 

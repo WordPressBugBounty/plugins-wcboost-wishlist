@@ -1,13 +1,18 @@
 <?php
 /**
  * Install plugin
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
  */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Installation class
+ * Class \WCBoost\Wishlist\Install
  */
 class Install {
 	/**
@@ -16,7 +21,7 @@ class Install {
 	 * @var array
 	 */
 	private static $upgrades = [
-		'1.1.6' => 'WCBoost\Wishlist\Upgrade::upgrade_116'
+		'1.1.6' => 'WCBoost\Wishlist\Upgrade::upgrade_116',
 	];
 
 	/**

@@ -1,8 +1,19 @@
 <?php
+/**
+ * Shortcodes
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Class \WCBoost\Wishlist\Shortcodes
+ */
 class Shortcodes {
 
 	/**
@@ -16,7 +27,7 @@ class Shortcodes {
 	/**
 	 * Wishlist shortcode
 	 *
-	 * @param array $atts
+	 * @param array $atts Shortcode attributes.
 	 * @return string
 	 */
 	public static function wishlist( $atts ) {
@@ -29,14 +40,9 @@ class Shortcodes {
 		);
 
 		$wishlist = Helper::get_wishlist( $atts['token'] );
-		$template = self::get_wishlist_template( $wishlist );
-		$args     = [
-			'wishlist'   => $wishlist,
-			'return_url' => apply_filters( 'wcboost_wishlist_return_to_shop_redirect', wc_get_page_permalink( 'shop' ) ),
-		];
-
-		$args = apply_filters( 'wcboost_wishlist_template_args', $args, $wishlist );
-		$html = wc_get_template_html( $template, $args, '', Plugin::instance()->plugin_path() . '/templates/' );
+		$template = Templates::get_wishlist_template( $wishlist );
+		$args     = Templates::get_wishlist_template_args( $wishlist );
+		$html     = Templates::get_template_html( $template, $args );
 
 		return '<div class="woocommerce wocommerce-wishlist wcboost-wishlist">' . $html . '</div>';
 	}
@@ -44,7 +50,7 @@ class Shortcodes {
 	/**
 	 * Add to wishlist button shortcode
 	 *
-	 * @param array $atts
+	 * @param array $atts Shortcode attributes.
 	 * @return string
 	 */
 	public static function button( $atts ) {
@@ -65,7 +71,11 @@ class Shortcodes {
 			return '';
 		}
 
-		/** @var \WC_Product || \WC_Product_Variable $_product */
+		/**
+		 * Product object.
+		 *
+		 * @var \WC_Product|\WC_Product_Variable $_product
+		 */
 		$_product = wc_get_product( $product_id );
 
 		if ( ! $_product ) {
@@ -79,7 +89,7 @@ class Shortcodes {
 			return '';
 		}
 
-		$args = Frontend::instance()->get_button_template_args( $wishlist, $item );
+		$args = Templates::get_button_template_args( $wishlist, $item );
 
 		$args['quantity'] = $atts['quantity'];
 
@@ -87,7 +97,7 @@ class Shortcodes {
 			$args['class'] .= ' ' . $atts['class'];
 		}
 
-		$html = wc_get_template_html( 'loop/add-to-wishlist.php', $args, '', Plugin::instance()->plugin_path() . '/templates/' );
+		$html = Templates::get_template_html( 'loop/add-to-wishlist.php', $args );
 
 		return apply_filters( 'wcboost_wishlist_shortcode_button_html', $html, $wishlist, $item, $atts );
 	}
@@ -95,22 +105,14 @@ class Shortcodes {
 	/**
 	 * Get the wishlist template.
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @deprecated 1.2.2
+	 *
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return string
 	 */
 	public static function get_wishlist_template( $wishlist ) {
-		if ( $wishlist->can_edit() ) {
-			if ( get_query_var( 'edit-wishlist' ) ) {
-				$template = 'wishlist/form-edit-wishlist.php';
-			} else {
-				$template = $wishlist->count_items() ? 'wishlist/wishlist.php' : 'wishlist/wishlist-empty.php';
-			}
-		} elseif ( $wishlist->is_shareable() ) {
-			$template = $wishlist->count_items() ? 'wishlist/wishlist.php' : 'wishlist/wishlist-empty.php';
-		} else {
-			$template = 'wishlist/wishlist-none.php';
-		}
+		_deprecated_function( __FUNCTION__, '1.2.2', 'WCBoost\Wishlist\Templates::get_wishlist_template()' );
 
-		return apply_filters( 'wcboost_wishlist_template', $template, $wishlist );
+		return Templates::get_wishlist_template( $wishlist );
 	}
 }

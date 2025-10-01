@@ -1,8 +1,19 @@
 <?php
+/**
+ * Action scheduler
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Class \WCBoost\Wishlist\Action_Scheduler
+ */
 class Action_Scheduler {
 
 	/**

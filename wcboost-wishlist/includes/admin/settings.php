@@ -1,4 +1,10 @@
 <?php
+/**
+ * Settings
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
@@ -7,10 +13,13 @@ if ( ! class_exists( '\WC_Settings_Page' ) ) {
 	include_once WC_ABSPATH . 'includes/admin/settings/class-wc-settings-page.php';
 }
 
+/**
+ * Class \WCBoost\Wishlist\Settings
+ */
 class Settings extends \WC_Settings_Page {
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 */
 	public function __construct() {
 		$this->id = 'wcboost_wishlist';
@@ -25,14 +34,17 @@ class Settings extends \WC_Settings_Page {
 	/**
 	 * Get settings for the default section.
 	 *
-	 * @return array
+	 * @return array Settings for the default section.
 	 */
 	protected function get_settings_for_default_section() {
-		$exclude_pages = apply_filters( 'wcboost_wishlist_page_id_option_exclude', [
-			wc_get_page_id( 'checkout' ),
-			wc_get_page_id( 'myaccount' ),
-			wc_get_page_id( 'cart' ),
-		] );
+		$exclude_pages = apply_filters(
+			'wcboost_wishlist_page_id_option_exclude',
+			[
+				wc_get_page_id( 'checkout' ),
+				wc_get_page_id( 'myaccount' ),
+				wc_get_page_id( 'cart' ),
+			]
+		);
 
 		$settings = [
 			// General section.
@@ -111,11 +123,11 @@ class Settings extends \WC_Settings_Page {
 				'type' => 'sectionend',
 				'id'   => 'wcboost_wishlist_general_section',
 			],
-			  // Button section.
+			// Button section.
 			[
 				'type'  => 'title',
 				'title' => __( 'Wishlist button', 'wcboost-wishlist' ),
-				  /* translators: %s: URL to the Customizer section */
+				/* translators: %s: URL to the Customizer section */
 				'desc' => wp_kses( sprintf( __( 'This section controls how the wishlist button is displayed and worked. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_button' ) ) ), [ 'a' => [ 'href' => true, 'target' => true ] ] ),
 				'id'   => 'wcboost_wishlist_button_section',
 			],
@@ -184,8 +196,8 @@ class Settings extends \WC_Settings_Page {
 				'type'  => 'title',
 				'title' => __( 'Wishlist Page', 'wcboost-wishlist' ),
 				/* translators: %s: URL to the Customizer section */
-				'desc' => wp_kses( sprintf( __( 'This section controls how the wishlist page is displayed. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_page' ) ) ), [ 'a' => [ 'href' => true, 'target' => true ] ] ),
-				'id'   => 'wcboost_wishlist_page_section',
+				'desc'  => wp_kses( sprintf( __( 'This section controls how the wishlist page is displayed. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_page' ) ) ), [ 'a' => [ 'href' => true, 'target' => true ] ] ),
+				'id'    => 'wcboost_wishlist_page_section',
 			],
 			[
 				'name'     => __( 'Page', 'wcboost-wishlist' ),
@@ -381,8 +393,8 @@ class Settings extends \WC_Settings_Page {
 	/**
 	 * Add endpoint settings to the Settings > Advanced > Page setup.
 	 *
-	 * @param array $settings
-	 * @return array
+	 * @param array $settings Settings.
+	 * @return array Endpoint settings.
 	 */
 	public function get_endpoint_settings( $settings ) {
 		$endpoint_settings = [

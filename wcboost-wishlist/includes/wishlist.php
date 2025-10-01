@@ -1,4 +1,12 @@
 <?php
+/**
+ * Wishlist data
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
@@ -6,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 use WCBoost\Wishlist\Helper;
 
 /**
- * Wishlist Data
+ * Class \WCBoost\Wishlist\Wishlist
  */
 class Wishlist extends \WC_Data {
 
@@ -153,7 +161,7 @@ class Wishlist extends \WC_Data {
 	 *
 	 * @since 1.1.6
 	 *
-	 * @return int
+	 * @return void
 	 */
 	public function read_totlal_items() {
 		$this->total_items = $this->get_data_store()->get_items_count( $this );
@@ -176,7 +184,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist id
 	 *
-	 * @param int $id
+	 * @param int $id Wishlist ID.
 	 */
 	public function set_wishlist_id( $id ) {
 		$this->set_prop( 'wishlist_id', absint( $id ) );
@@ -185,7 +193,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist title
 	 *
-	 * @param string $title
+	 * @param string $title Wishlist title.
 	 */
 	public function set_wishlist_title( $title ) {
 		$this->set_prop( 'wishlist_title', $title );
@@ -194,7 +202,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist slug
 	 *
-	 * @param string $slug
+	 * @param string $slug Wishlist slug.
 	 */
 	public function set_wishlist_slug( $slug ) {
 		$this->set_prop( 'wishlist_slug', $slug );
@@ -203,7 +211,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist token
 	 *
-	 * @param string $token
+	 * @param string $token Wishlist token.
 	 */
 	public function set_wishlist_token( $token ) {
 		$this->set_prop( 'wishlist_token', (string) $token );
@@ -212,7 +220,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist description
 	 *
-	 * @param string $description
+	 * @param string $description Wishlist description.
 	 */
 	public function set_description( $description ) {
 		$this->set_prop( 'description', $description );
@@ -221,7 +229,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set menu order
 	 *
-	 * @param int $token
+	 * @param int $order Menu order.
 	 */
 	public function set_menu_order( $order ) {
 		$this->set_prop( 'menu_order', absint( $order ) );
@@ -230,10 +238,22 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist status
 	 *
+	 * @since 1.2.2 Support multi-status format (for deleted wishlists)
 	 * @param string $status The wishlist status "shared", "private", "publish" or "trash".
 	 */
 	public function set_status( $status ) {
-		if ( in_array( $status, [ 'shared', 'private', 'publish', 'trash' ] ) ) {
+		$status_parts   = array_map( 'trim', explode( ',', $status ) );
+		$valid_statuses = [ 'shared', 'private', 'publish', 'trash' ];
+
+		$all_valid = true;
+		foreach ( $status_parts as $part ) {
+			if ( ! in_array( $part, $valid_statuses ) ) {
+				$all_valid = false;
+				break;
+			}
+		}
+
+		if ( $all_valid ) {
 			$this->set_prop( 'status', (string) $status );
 		}
 	}
@@ -241,7 +261,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist user id
 	 *
-	 * @param int $user_id The ID of user who created the wishlist
+	 * @param int $user_id The ID of user who created the wishlist.
 	 */
 	public function set_user_id( $user_id ) {
 		$this->set_prop( 'user_id', absint( $user_id ) );
@@ -250,7 +270,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist user id
 	 *
-	 * @param string $session_id
+	 * @param string $session_id Wishlist session ID.
 	 */
 	public function set_session_id( $session_id ) {
 		$this->set_prop( 'session_id', $session_id );
@@ -286,7 +306,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set wishlist title
 	 *
-	 * @param bool $title
+	 * @param bool $is_default Whether the wishlist is default.
 	 */
 	public function set_is_default( $is_default ) {
 		$this->set_prop( 'is_default', (bool) $is_default );
@@ -296,7 +316,8 @@ class Wishlist extends \WC_Data {
 	 * Get wishlist title
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return int
+	 *
+	 * @return int Wishlist ID.
 	 */
 	public function get_wishlist_id( $context = 'view' ) {
 		return intval( $this->get_prop( 'wishlist_id', $context ) );
@@ -306,7 +327,8 @@ class Wishlist extends \WC_Data {
 	 * Get wishlist title
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return string
+	 *
+	 * @return string Wishlist title.
 	 */
 	public function get_wishlist_title( $context = 'view' ) {
 		return $this->get_prop( 'wishlist_title', $context );
@@ -316,7 +338,8 @@ class Wishlist extends \WC_Data {
 	 * Get wishlist slug
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return string
+	 *
+	 * @return string Wishlist slug.
 	 */
 	public function get_wishlist_slug( $context = 'view' ) {
 		return $this->get_prop( 'wishlist_slug', $context );
@@ -326,7 +349,8 @@ class Wishlist extends \WC_Data {
 	 * Get wishlist token
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return string
+	 *
+	 * @return string Wishlist token.
 	 */
 	public function get_wishlist_token( $context = 'view' ) {
 		return trim( $this->get_prop( 'wishlist_token', $context ) );
@@ -336,7 +360,8 @@ class Wishlist extends \WC_Data {
 	 * Get wishlist description
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return string
+	 *
+	 * @return string Wishlist description.
 	 */
 	public function get_description( $context = 'view' ) {
 		return $this->get_prop( 'description', $context );
@@ -346,7 +371,8 @@ class Wishlist extends \WC_Data {
 	 * Get menu order
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return int
+	 *
+	 * @return int Menu order.
 	 */
 	public function get_menu_order( $context = 'view' ) {
 		return intval( $this->get_prop( 'menu_order', $context ) );
@@ -355,18 +381,30 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Get wishlist status
 	 *
+	 * @since 1.2.2 Support multi-status format. The primary status is the first part of the comma-separated string.
+	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return string
+	 *
+	 * @return string Wishlist status (the primary status).
 	 */
 	public function get_status( $context = 'view' ) {
-		return $this->get_prop( 'status', $context );
+		$status = $this->get_prop( 'status', $context );
+
+		// Return raw status for edit context (used by data store)
+		if ( 'edit' === $context ) {
+			return $status;
+		}
+
+		// Return only primary status for view context (public API)
+		return explode( ',', $status )[0];
 	}
 
 	/**
 	 * Get user id
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return int
+	 *
+	 * @return int User ID.
 	 */
 	public function get_user_id( $context = 'view' ) {
 		return intval( $this->get_prop( 'user_id', $context ) );
@@ -376,7 +414,8 @@ class Wishlist extends \WC_Data {
 	 * Get session id
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return string
+	 *
+	 * @return string Session ID.
 	 */
 	public function get_session_id( $context = 'view' ) {
 		return $this->get_prop( 'session_id', $context );
@@ -386,7 +425,8 @@ class Wishlist extends \WC_Data {
 	 * Get created date
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return WC_DateTime|NULL
+	 *
+	 * @return \WC_DateTime|null
 	 */
 	public function get_date_created( $context = 'view' ) {
 		return $this->get_prop( 'date_created', $context );
@@ -396,7 +436,8 @@ class Wishlist extends \WC_Data {
 	 * Get modified date
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return WC_DateTime|NULL
+	 *
+	 * @return \WC_DateTime|null
 	 */
 	public function get_date_modified( $context = 'view' ) {
 		return $this->get_prop( 'date_modified', $context );
@@ -406,7 +447,8 @@ class Wishlist extends \WC_Data {
 	 * Get expire date
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return WC_DateTime|NULL
+	 *
+	 * @return \WC_DateTime|null
 	 */
 	public function get_date_expires( $context = 'view' ) {
 		return $this->get_prop( 'date_expires', $context );
@@ -416,7 +458,8 @@ class Wishlist extends \WC_Data {
 	 * Get value of the prop is_default
 	 *
 	 * @param string $context What the value is for. Valid values are 'view' and 'edit'.
-	 * @return bool
+	 *
+	 * @return bool Whether the wishlist is default.
 	 */
 	public function get_is_default( $context = 'view' ) {
 		return \wc_string_to_bool( $this->get_prop( 'is_default', $context ) );
@@ -425,7 +468,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Check if current wishlist is default
 	 *
-	 * @return bool
+	 * @return bool Whether the wishlist is default.
 	 */
 	public function is_default() {
 		return $this->get_is_default();
@@ -434,13 +477,17 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Move the wishlist to trash by updating the status and set the expires date.
 	 *
-	 * @return bool
+	 * @return bool Whether the wishlist is moved to trash.
 	 */
 	public function trash() {
+		if ( 'trash' === $this->get_status() ) {
+			return false;
+		}
+
 		if ( $this->data_store ) {
 			do_action( 'wcboost_wishlist_move_to_trash', $this );
 
-			$this->set_status( 'trash' );
+			$this->set_status( 'trash,' . $this->get_status() );
 			$this->set_date_expires( strtotime( '+30 days' ) );
 			$this->save();
 
@@ -455,13 +502,18 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Restore trashed wishlist
 	 *
-	 * @return bool
+	 * @return bool Whether the wishlist is restored.
 	 */
 	public function restore() {
 		if ( $this->data_store && 'trash' == $this->get_status() ) {
 			do_action( 'wcboost_wishlist_restore', $this );
 
-			$this->set_status( 'private' );
+			// Extract previous status from multi-status format
+			$full_status     = $this->get_prop( 'status' );
+			$status_parts    = explode( ',', $full_status );
+			$previous_status = isset( $status_parts[1] ) ? trim( $status_parts[1] ) : 'private';
+
+			$this->set_status( $previous_status );
 			$this->set_date_expires( '' );
 			$this->save();
 
@@ -476,9 +528,9 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Add a new item to the wishlist
 	 *
-	 * @param Wishlist_Item $item Item to be added
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Item to be added.
 	 *
-	 * @return bool|WP_Error Returns TRUE on success, FALSE on failure. WP_Error on invalid.
+	 * @return bool|\WP_Error Returns TRUE on success, FALSE on failure. WP_Error on invalid.
 	 */
 	public function add_item( $item ) {
 		if ( ! $item instanceof Wishlist_Item || ! $item->get_product_id() ) {
@@ -531,8 +583,9 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Remove a wishlist item
 	 *
-	 * @param string $item_key The item key or item object
-	 * @return bool|WP_Error Returns TRUE on success, WP_Error on invalid.
+	 * @param string $item_key The item key or item object.
+	 *
+	 * @return bool|\WP_Error Returns TRUE on success, WP_Error on invalid.
 	 */
 	public function remove_item( $item_key ) {
 		if ( ! $this->can_edit() ) {
@@ -562,8 +615,9 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Restore an item
 	 *
-	 * @param string|Wishlist_Item $item
-	 * @return bool|WP_Error Returns TRUE on success, WP_Error on invalid.
+	 * @param string|\WCBoost\Wishlist\Wishlist_Item $item Item to be restored.
+	 *
+	 * @return bool|\WP_Error Returns TRUE on success, WP_Error on invalid.
 	 */
 	public function restore_item( $item ) {
 		if ( ! $this->can_edit() ) {
@@ -601,8 +655,9 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Check if an item exists in the wishlist
 	 *
-	 * @param Wishlist_Item|string $item Item object or item key
-	 * @return bool
+	 * @param \WCBoost\Wishlist\Wishlist_Item|string $item Item object or item key.
+	 *
+	 * @return bool Whether the item exists in the wishlist.
 	 */
 	public function has_item( $item ) {
 		if ( ! is_string( $item ) && ! is_a( $item, '\WCBoost\Wishlist\Wishlist_Item' ) ) {
@@ -626,15 +681,16 @@ class Wishlist extends \WC_Data {
 
 		$item_key = is_string( $item ) ? $item : $item->get_item_key();
 
-		// Only check the items array without loading items if they're not read yet
+		// Only check the items array without loading items if they're not read yet.
 		return array_key_exists( $item_key, $this->items );
 	}
 
 	/**
-	 * Get item object
+	 * Get item object.
 	 *
-	 * @param string $item_key Item key
-	 * @return Wishlist_Item|bool
+	 * @param string $item_key Item key.
+	 *
+	 * @return \WCBoost\Wishlist\Wishlist_Item|bool
 	 */
 	public function get_item( $item_key ) {
 		if ( ! $this->has_item( $item_key ) ) {
@@ -645,24 +701,23 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Get the list of items
+	 * Get the list of items.
 	 *
-	 * @return Wishlist_Item[]
+	 * @return \WCBoost\Wishlist\Wishlist_Item[]
 	 */
 	public function get_items() {
 		if ( $this->get_items_read() ) {
 			return $this->items;
 		}
 
-		if ( $this->count_items() ) {
-			try {
-				$this->get_data_store()->read_items( $this );
-				$this->set_items_read( true );
-			} catch ( \Exception $e ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( 'Error loading wishlist items: ' . $e->getMessage() );
-				}
+		// Don't check for items count, because we need to load trashed items too (for the `restore` action).
+		try {
+			$this->get_data_store()->read_items( $this );
+			$this->set_items_read( true );
+		} catch ( \Exception $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( 'Error loading wishlist items: ' . $e->getMessage() );
 			}
 		}
 
@@ -670,36 +725,40 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Count items in the wishlist
+	 * Count items in the wishlist.
 	 *
-	 * @return int
+	 * @return int Number of items in the wishlist.
 	 */
 	public function count_items() {
-		// If items are already loaded, count from the items array
+		// If items are already loaded, count from the items array.
 		if ( $this->get_items_read() ) {
 			return count( $this->items );
 		}
 
-		// Otherwise use the total_items property which was loaded with the wishlist data
+		// Otherwise use the total_items property which was loaded with the wishlist data.
 		return $this->total_items;
 	}
 
 	/**
-	 * Test if the wishlist is empty
+	 * Test if the wishlist is empty.
 	 *
-	 * @return bool
+	 * @return bool Whether the wishlist is empty.
 	 */
 	public function is_empty() {
 		return $this->count_items() > 0 ? false : true;
 	}
 
 	/**
-	 * Check if current user can edit the wishlist
+	 * Check if current user can edit the wishlist.
 	 *
-	 * @return bool
+	 * @return bool Whether the current user can edit the wishlist.
 	 */
 	public function can_edit() {
 		if ( ! $this->get_id() ) {
+			return false;
+		}
+
+		if ( 'trash' === $this->get_status() ) {
 			return false;
 		}
 
@@ -717,26 +776,37 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Check if the wishlist is public
+	 * Check if current user can delete the wishlist.
 	 *
-	 * @return bool
+	 * @return bool Whether the current user can delete the wishlist.
+	 */
+	public function can_delete() {
+		return $this->can_edit() && ! $this->is_default();
+	}
+
+	/**
+	 * Check if the wishlist is public.
+	 *
+	 * @return bool Whether the wishlist is public.
 	 */
 	public function is_public() {
 		return $this->get_status() === 'publish';
 	}
 
 	/**
-	 * Check if the wishlist is shareable
+	 * Check if the wishlist is shareable.
 	 *
-	 * @return bool
+	 * @return bool Whether the wishlist is shareable.
 	 */
 	public function is_shareable() {
-		return in_array( $this->get_status(), ['publish', 'shared'] );
+		return in_array( $this->get_status(), [ 'publish', 'shared' ] );
 	}
 
 	/**
 	 * Save should create or update based on object existence.
 	 * Also set the session id for guests.
+	 *
+	 * @return void
 	 */
 	public function save() {
 		$this->set_date_modified( time() );
@@ -749,9 +819,9 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Save wishlist items
+	 * Save wishlist items.
 	 *
-	 * @return int
+	 * @return int Wishlist ID.
 	 */
 	public function save_items() {
 		if ( ! $this->data_store ) {
@@ -768,8 +838,9 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Add an item to trash
 	 *
-	 * @param Wishlist_Item $item
-	 * @return bool
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Item to be added to trash.
+	 *
+	 * @return bool Whether the item is added to trash.
 	 */
 	public function add_item_to_trash( $item ) {
 		if ( ! $item instanceof Wishlist_Item ) {
@@ -791,8 +862,9 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Remove an item from the trash
 	 *
-	 * @param Wishlist_Item $item
-	 * @return bool
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item Item to be removed from trash.
+	 *
+	 * @return bool Whether the item is removed from trash.
 	 */
 	public function remove_item_from_trash( $item ) {
 		if ( ! $item instanceof Wishlist_Item ) {
@@ -805,7 +877,7 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Empty the wishlist
+	 * Empty the wishlist.
 	 *
 	 * @since 1.1.4
 	 *
@@ -824,12 +896,13 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Check if the wishlist has a product
+	 * Check if the wishlist has a product.
 	 *
 	 * @since 1.1.4
 	 *
-	 * @param int $product_id
-	 * @return bool
+	 * @param int $product_id Product ID.
+	 *
+	 * @return bool Whether the wishlist has the product.
 	 */
 	public function has_product( $product_id ) {
 		foreach ( $this->items as $item ) {
@@ -842,9 +915,9 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Get the public URL of the wishlist
+	 * Get the public URL of the wishlist.
 	 *
-	 * @return string
+	 * @return string Wishlist public URL.
 	 */
 	public function get_public_url() {
 		$url = Plugin::instance()->query->get_endpoint_url( 'wishlist-token', $this->get_wishlist_token() );
@@ -855,12 +928,50 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Get the edit URL of the wishlist
 	 *
-	 * @return string
+	 * @return string Wishlist edit URL.
 	 */
 	public function get_edit_url() {
 		$url = Plugin::instance()->query->get_endpoint_url( 'edit-wishlist', $this->get_wishlist_token() );
 
 		return apply_filters( 'wcboost_wishlist_edit_url', $url, $this );
+	}
+
+	/**
+	 * Get the restore URL of the wishlist
+	 *
+	 * @since 1.2.2
+	 *
+	 * @return string Wishlist restore URL.
+	 */
+	public function get_restore_url() {
+		$url = add_query_arg(
+			[
+				'untrash-wishlist' => $this->get_wishlist_token(),
+				'_wpnonce'         => wp_create_nonce( 'wcboost-wishlist-untrash' ),
+			],
+			wc_get_page_permalink( 'wishlist' )
+		);
+
+		return apply_filters( 'wcboost_wishlist_restore_url', $url, $this );
+	}
+
+	/**
+	 * Get the delete URL of the wishlist
+	 *
+	 * @since 1.2.2
+	 *
+	 * @return string Wishlist delete URL.
+	 */
+	public function get_delete_url() {
+		$url = add_query_arg(
+			[
+				'remove-wishlist' => $this->get_wishlist_token(),
+				'_wpnonce'        => wp_create_nonce( 'wcboost-wishlist-remove' ),
+			],
+			wc_get_page_permalink( 'wishlist' )
+		);
+
+		return apply_filters( 'wcboost_wishlist_delete_url', $url, $this );
 	}
 
 	/**
@@ -916,13 +1027,13 @@ class Wishlist extends \WC_Data {
 	}
 
 	/**
-	 * Merge items from another wishlist
+	 * Merge items from another wishlist.
 	 *
 	 * @since 1.1.4
 	 *
-	 * @param Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist to merge.
 	 *
-	 * @return int Number of items merged
+	 * @return int Number of items merged.
 	 */
 	public function merge( $wishlist ) {
 		$this->data_store->set_is_reading( true );
@@ -948,7 +1059,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Set if items have been read from the database.
 	 *
-	 * @param bool $read
+	 * @param bool $read Whether items have been read from the database.
 	 */
 	public function set_items_read( $read = true ) {
 		$this->items_read = (bool) $read;
@@ -957,7 +1068,7 @@ class Wishlist extends \WC_Data {
 	/**
 	 * Return if items have been read from the database.
 	 *
-	 * @return bool
+	 * @return bool Whether items have been read from the database.
 	 */
 	public function get_items_read() {
 		return (bool) $this->items_read;

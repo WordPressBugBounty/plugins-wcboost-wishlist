@@ -1,7 +1,12 @@
 <?php
 /**
  * Compatible with other plugins/themes
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
  */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;

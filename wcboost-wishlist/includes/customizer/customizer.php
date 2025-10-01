@@ -1,4 +1,10 @@
 <?php
+/**
+ * Customizer
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist\Customize;
 
 defined( 'ABSPATH' ) || exit;
@@ -6,6 +12,9 @@ defined( 'ABSPATH' ) || exit;
 use WCBoost\Packages\Utilities\SingletonTrait;
 use WCBoost\Wishlist\Plugin;
 
+/**
+ * Class \WCBoost\Wishlist\Customize\Customizer
+ */
 class Customizer {
 
 	use SingletonTrait;
@@ -46,19 +55,25 @@ class Customizer {
 			$panel = 'woocommerce';
 		}
 
-		$wp_customize->add_section( 'wcboost_wishlist_page', [
-			'title'       => esc_html__( 'Wishlist Page', 'wcboost-wishlist' ),
-			'description' => esc_html__( 'These options let you change the appearance of the wishlist page.', 'wcboost-wishlist' ),
-			'priority'    => 20,
-			'panel'    => $panel,
-		] );
+		$wp_customize->add_section(
+			'wcboost_wishlist_page',
+			[
+				'title'       => esc_html__( 'Wishlist Page', 'wcboost-wishlist' ),
+				'description' => esc_html__( 'These options let you change the appearance of the wishlist page.', 'wcboost-wishlist' ),
+				'priority'    => 20,
+				'panel'       => $panel,
+			]
+		);
 
-		$wp_customize->add_section( 'wcboost_wishlist_button', [
-			'title'       => esc_html__( 'Wishlist Button', 'wcboost-wishlist' ),
-			'description' => esc_html__( 'These options let you change the appearance of the wishlist button.', 'wcboost-wishlist' ),
-			'priority'    => 20,
-			'panel'       => $panel,
-		] );
+		$wp_customize->add_section(
+			'wcboost_wishlist_button',
+			[
+				'title'       => esc_html__( 'Wishlist Button', 'wcboost-wishlist' ),
+				'description' => esc_html__( 'These options let you change the appearance of the wishlist button.', 'wcboost-wishlist' ),
+				'priority'    => 20,
+				'panel'       => $panel,
+			]
+		);
 	}
 
 	/**
@@ -169,7 +184,6 @@ class Customizer {
 				'sanitize_js_callback' => 'wc_string_to_bool',
 			]
 		);
-
 	}
 
 	/**
@@ -247,10 +261,10 @@ class Customizer {
 		$wp_customize->add_control(
 			'wcboost_wishlist_button_icon',
 			[
-				'label'       => __( 'Button icon', 'wcboost-wishlist' ),
-				'section'     => $section,
-				'type'        => 'select',
-				'choices'     => [
+				'label'   => __( 'Button icon', 'wcboost-wishlist' ),
+				'section' => $section,
+				'type'    => 'select',
+				'choices' => [
 					''         => __( 'No icon', 'wcboost-wishlist' ),
 					'heart'    => __( 'Heart', 'wcboost-wishlist' ),
 					'star'     => __( 'Star', 'wcboost-wishlist' ),
@@ -417,33 +431,39 @@ class Customizer {
 				]
 			);
 
-			$wp_customize->add_control( new \WP_Customize_Color_Control(
-				$wp_customize,
-				'wcboost_wishlist_button_style[background_color]',
-				[
-					'label'       => __( 'Button', 'wcboost-wishlist' ),
-					'description' => __( 'Background color', 'wcboost-wishlist' ),
-					'section'     => $section,
-				]
-			) );
+			$wp_customize->add_control(
+				new \WP_Customize_Color_Control(
+					$wp_customize,
+					'wcboost_wishlist_button_style[background_color]',
+					[
+						'label'       => __( 'Button', 'wcboost-wishlist' ),
+						'description' => __( 'Background color', 'wcboost-wishlist' ),
+						'section'     => $section,
+					]
+				)
+			);
 
-			$wp_customize->add_control( new \WP_Customize_Color_Control(
-				$wp_customize,
-				'wcboost_wishlist_button_style[border_color]',
-				[
-					'description' => __( 'Border color', 'wcboost-wishlist' ),
-					'section'     => $section,
-				]
-			) );
+			$wp_customize->add_control(
+				new \WP_Customize_Color_Control(
+					$wp_customize,
+					'wcboost_wishlist_button_style[border_color]',
+					[
+						'description' => __( 'Border color', 'wcboost-wishlist' ),
+						'section'     => $section,
+					]
+				)
+			);
 
-			$wp_customize->add_control( new \WP_Customize_Color_Control(
-				$wp_customize,
-				'wcboost_wishlist_button_style[text_color]',
-				[
-					'description' => __( 'Text color', 'wcboost-wishlist' ),
-					'section'     => $section,
-				]
-			) );
+			$wp_customize->add_control(
+				new \WP_Customize_Color_Control(
+					$wp_customize,
+					'wcboost_wishlist_button_style[text_color]',
+					[
+						'description' => __( 'Text color', 'wcboost-wishlist' ),
+						'section'     => $section,
+					]
+				)
+			);
 
 			// Hover
 			$wp_customize->add_setting(
@@ -479,60 +499,69 @@ class Customizer {
 				]
 			);
 
-			$wp_customize->add_control( new \WP_Customize_Color_Control(
-				$wp_customize,
-				'wcboost_wishlist_button_hover_style[background_color]',
-				[
-					'label'       => __( 'Button Hover', 'wcboost-wishlist' ),
-					'description' => __( 'Background color', 'wcboost-wishlist' ),
-					'section'     => $section,
-				]
-			) );
+			$wp_customize->add_control(
+				new \WP_Customize_Color_Control(
+					$wp_customize,
+					'wcboost_wishlist_button_hover_style[background_color]',
+					[
+						'label'       => __( 'Button Hover', 'wcboost-wishlist' ),
+						'description' => __( 'Background color', 'wcboost-wishlist' ),
+						'section'     => $section,
+					]
+				)
+			);
 
-			$wp_customize->add_control( new \WP_Customize_Color_Control(
-				$wp_customize,
-				'wcboost_wishlist_button_hover_style[border_color]',
-				[
-					'description' => __( 'Border color', 'wcboost-wishlist' ),
-					'section'     => $section,
-				]
-			) );
+			$wp_customize->add_control(
+				new \WP_Customize_Color_Control(
+					$wp_customize,
+					'wcboost_wishlist_button_hover_style[border_color]',
+					[
+						'description' => __( 'Border color', 'wcboost-wishlist' ),
+						'section'     => $section,
+					]
+				)
+			);
 
-			$wp_customize->add_control( new \WP_Customize_Color_Control(
-				$wp_customize,
-				'wcboost_wishlist_button_hover_style[text_color]',
-				[
-					'description' => __( 'Text color', 'wcboost-wishlist' ),
-					'section'     => $section,
-				]
-			) );
+			$wp_customize->add_control(
+				new \WP_Customize_Color_Control(
+					$wp_customize,
+					'wcboost_wishlist_button_hover_style[text_color]',
+					[
+						'description' => __( 'Text color', 'wcboost-wishlist' ),
+						'section'     => $section,
+					]
+				)
+			);
 		}
 	}
 
 	/**
 	 * Check and register the WCBoost panel if WooCommerce panel doesn't exist.
 	 *
-	 * @param  \WP_Customize_Manager $wp_customize
+	 * @param \WP_Customize_Manager $wp_customize Customizer manager.
 	 * @return void
 	 */
 	private function maybe_register_panel( $wp_customize ) {
 		if ( ! $wp_customize->get_panel( 'wcboost' ) ) {
-			$wp_customize->add_panel( 'wcboost', [
-				'priority'   => 200,
-				'capability' => 'manage_woocommerce',
-				'title'      => __( 'WCBoost', 'wcboost-wishlist' ),
-			] );
+			$wp_customize->add_panel(
+				'wcboost',
+				[
+					'priority'   => 200,
+					'capability' => 'manage_woocommerce',
+					'title'      => __( 'WCBoost', 'wcboost-wishlist' ),
+				]
+			);
 		}
 	}
 
 	/**
 	 * Sanitize wishlist title mode option
 	 *
-	 * @param string $mode
+	 * @param string $mode Wishlist title mode.
 	 * @return string
 	 */
 	public function sanitize_wisthlist_title_mode( $mode ) {
-		return in_array( $mode, ['page_title', 'wishlist_title'] ) ? $mode : 'page_title';
+		return in_array( $mode, [ 'page_title', 'wishlist_title' ] ) ? $mode : 'page_title';
 	}
 
 	/**

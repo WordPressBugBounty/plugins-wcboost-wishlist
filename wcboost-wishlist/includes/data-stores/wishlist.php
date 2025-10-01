@@ -1,4 +1,10 @@
 <?php
+/**
+ * Wishlist data store
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist\DataStore;
 
 defined( 'ABSPATH' ) || exit;
@@ -6,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 use WCBoost\Wishlist\Session;
 
 /**
- * Wishlist Data Store
+ * Class \WCBoost\Wishlist\DataStore\Wishlist
  */
 class Wishlist {
 
@@ -23,7 +29,7 @@ class Wishlist {
 	 * @since 1.0.0
 	 *
 	 * @global wpdb $wpdb
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 */
 	public function create( &$wishlist ) {
 		global $wpdb;
@@ -73,7 +79,7 @@ class Wishlist {
 			'wishlist_token' => $wishlist->get_wishlist_token(),
 			'description'    => $wishlist->get_description(),
 			'menu_order'     => $wishlist->get_menu_order(),
-			'status'         => $wishlist->get_status(),
+			'status'         => $wishlist->get_status( 'edit' ),
 			'user_id'        => $wishlist->get_user_id(),
 			'session_id'     => $wishlist->get_session_id(),
 			'date_created'   => $wishlist->get_date_created()->format( 'Y-m-d H:i:s' ),
@@ -126,7 +132,7 @@ class Wishlist {
 	 * @since 1.0.0
 	 *
 	 * @global wpdb $wpdb
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 */
 	public function update( &$wishlist ) {
 		global $wpdb;
@@ -139,12 +145,16 @@ class Wishlist {
 				'menu_order',
 				'status',
 				'date_modified',
+				'date_expires',
 				'is_default',
 			],
 			array_keys( $wishlist->get_changes() )
 		);
 
 		if ( ! empty( $allowed_changes ) ) {
+			$date_modified = $wishlist->get_date_modified( 'edit' );
+			$date_expires  = $wishlist->get_date_expires( 'edit' );
+
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$wpdb->prefix . 'wcboost_wishlists',
@@ -154,7 +164,8 @@ class Wishlist {
 					'description'    => $wishlist->get_description( 'edit' ),
 					'menu_order'     => $wishlist->get_menu_order( 'edit' ),
 					'status'         => $wishlist->get_status( 'edit' ),
-					'date_modified'  => $wishlist->get_date_modified( 'edit' )->format( 'Y-m-d H:i:s' ),
+					'date_modified'  => $date_modified ? $date_modified->format( 'Y-m-d H:i:s' ) : '',
+					'date_expires'   => $date_expires ? $date_expires->format( 'Y-m-d H:i:s' ) : '',
 					'is_default'     => $wishlist->get_is_default( 'edit' ),
 				],
 				[
@@ -179,8 +190,8 @@ class Wishlist {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object
-	 * @param array    $args Array of args to pass to the delete method.
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
+	 * @param array                       $args Array of args to pass to the delete method.
 	 */
 	public function delete( &$wishlist, $args = [] ) {
 		if ( ! $wishlist->get_wishlist_id() ) {
@@ -277,8 +288,9 @@ class Wishlist {
 	/**
 	 * Get wishlist items from the database.
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
-	 * @throws Exception If invalid wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
+	 *
+	 * @throws \Exception If invalid wishlist.
 	 */
 	public function read_items( &$wishlist ) {
 		global $wpdb;
@@ -318,8 +330,9 @@ class Wishlist {
 	/**
 	 * Get the total count of items in a wishlist
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
-	 * @return int
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
+	 *
+	 * @return int Wishlist items count.
 	 */
 	public function get_items_count( $wishlist ) {
 		$cache_key = 'wcboost-wishlist-items-count-' . $wishlist->get_wishlist_id( 'edit' );
@@ -355,8 +368,8 @@ class Wishlist {
 			$wishlist_id = wp_cache_get( 'wcboost-wishlist-default-' . get_current_user_id(), 'wishlists' );
 
 			if ( false === $wishlist_id ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-				$wishlist_id = $wpdb->get_var( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE user_id = %d AND status != 'trash' AND is_default = 1 LIMIT 1;", [ get_current_user_id() ] ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+				$wishlist_id = $wpdb->get_var( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE user_id = %d AND status NOT LIKE 'trash%' AND is_default = 1 LIMIT 1;", [ get_current_user_id() ] ) );
 
 				wp_cache_set( 'wcboost-wishlist-default-' . get_current_user_id(), $wishlist_id, 'wishlists' );
 			}
@@ -369,8 +382,8 @@ class Wishlist {
 				$wishlist_id = wp_cache_get( 'wcboost-wishlist-default-' . $session_id, 'wishlists' );
 
 				if ( false === $wishlist_id ) {
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-					$wishlist_id = $wpdb->get_var( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE session_id = %s AND status != 'trash' LIMIT 1;", [ $session_id ] ) );
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+					$wishlist_id = $wpdb->get_var( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE session_id = %s AND status NOT LIKE 'trash%' LIMIT 1;", [ $session_id ] ) );
 
 					wp_cache_set( 'wcboost-wishlist-default-' . $session_id, $wishlist_id, 'wishlists' );
 				}
@@ -397,8 +410,8 @@ class Wishlist {
 		$ids = wp_cache_get( 'wcboost-user-wishlists-' . get_current_user_id(), 'wishlists' );
 
 		if ( false === $ids ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE user_id = %d AND status != 'trash';", [ get_current_user_id() ] ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE user_id = %d AND status NOT LIKE 'trash%';", [ get_current_user_id() ] ) );
 			$ids = array_map( 'absint', $ids );
 
 			wp_cache_set( 'wcboost-user-wishlists-' . get_current_user_id(), $ids, 'wishlists' );
@@ -441,8 +454,9 @@ class Wishlist {
 	 *
 	 * @since 1.1.4
 	 *
-	 * @param string $session_id
-	 * @return int
+	 * @param string $session_id Wishlist session ID.
+	 *
+	 * @return int Wishlist ID.
 	 */
 	public function get_wishlist_id_by_session( $session_id ) {
 		global $wpdb;
@@ -467,7 +481,7 @@ class Wishlist {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return string
+	 * @return string Generated wishlist token.
 	 */
 	public function generate_token() {
 		global $wpdb;
@@ -476,7 +490,7 @@ class Wishlist {
 		$length = $length / 2;
 
 		do {
-			// Modified from "wc_rand_hash"
+			// Modified from "wc_rand_hash".
 			if ( ! function_exists( 'openssl_random_pseudo_bytes' ) ) {
 				$hash = sha1( wp_rand() );
 			} else {
@@ -495,7 +509,7 @@ class Wishlist {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return string|bool
+	 * @return string|bool Generated session ID.
 	 */
 	public function generate_session_id() {
 		if ( is_user_logged_in() ) {
@@ -514,6 +528,8 @@ class Wishlist {
 	 * When a new default wishlist is created/updated, previous default wishlist will be reset.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 */
 	public function reset_previous_default_wishlist( $wishlist ) {
 		if ( ! is_user_logged_in() ) {
@@ -523,10 +539,12 @@ class Wishlist {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare(
-			"UPDATE {$wpdb->prefix}wcboost_wishlists SET is_default = 0 WHERE wishlist_id != %d AND user_id = %d AND is_default = 1;",
-			[ $wishlist->get_wishlist_id( 'edit' ), $wishlist->get_user_id( 'edit' ) ]
-		) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}wcboost_wishlists SET is_default = 0 WHERE wishlist_id != %d AND user_id = %d AND is_default = 1;",
+				[ $wishlist->get_wishlist_id( 'edit' ), $wishlist->get_user_id( 'edit' ) ]
+			)
+		);
 	}
 
 	/**
@@ -536,8 +554,8 @@ class Wishlist {
 		global $wpdb;
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( "DELETE FROM {$wpdb->prefix}wcboost_wishlist_items WHERE wishlist_id IN ( SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE (status = 'trash' OR user_id = 0) AND date_expires < CURDATE() );" );
-		$wpdb->query( "DELETE FROM {$wpdb->prefix}wcboost_wishlists WHERE (status = 'trash' OR user_id = 0) AND date_expires < CURDATE();" );
+		$wpdb->query( "DELETE FROM {$wpdb->prefix}wcboost_wishlist_items WHERE wishlist_id IN ( SELECT wishlist_id FROM {$wpdb->prefix}wcboost_wishlists WHERE (status LIKE 'trash%' OR user_id = 0) AND date_expires < CURDATE() );" );
+		$wpdb->query( "DELETE FROM {$wpdb->prefix}wcboost_wishlists WHERE (status LIKE 'trash%' OR user_id = 0) AND date_expires < CURDATE();" );
 		// phpcs:enable
 	}
 
@@ -546,7 +564,7 @@ class Wishlist {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 */
 	public function clear_cache( &$wishlist ) {
 		if ( $wishlist->get_wishlist_id() ) {
@@ -575,7 +593,7 @@ class Wishlist {
 	 *
 	 * @since 1.1.1
 	 *
-	 * @param  bool $reading
+	 * @param bool $reading Whether is reading data.
 	 *
 	 * @return void
 	 */
@@ -584,11 +602,11 @@ class Wishlist {
 	}
 
 	/**
-	 * Get the reading_db status
+	 * Get the reading_db status.
 	 *
 	 * @since 1.1.1
 	 *
-	 * @return bool
+	 * @return bool Whether is reading data.
 	 */
 	public function is_reading() {
 		return $this->is_reading;

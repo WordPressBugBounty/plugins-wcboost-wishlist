@@ -2,8 +2,12 @@
 /**
  * Wishlist Session handler
  *
+ * @version 1.0.0
  * @since 1.1.2
+ *
+ * @package WCBoost\Wishlist
  */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
@@ -11,13 +15,13 @@ defined( 'ABSPATH' ) || exit;
 use WCBoost\Packages\Utilities\SingletonTrait;
 
 /**
- * Wishlist Session and Cookie Handler Class
+ * Class \WCBoost\Wishlist\Session
  */
 final class Session {
 	use SingletonTrait;
 
 	const SESSION_NAME = 'wcboost_wishlist_session';
-	const HASH_COOKIE = 'wcboost_wishlist_hash';
+	const HASH_COOKIE  = 'wcboost_wishlist_hash';
 
 	/**
 	 * Class constructor
@@ -103,7 +107,7 @@ final class Session {
 	 *
 	 * @since 1.1.2
 	 *
-	 * @param string $session_id
+	 * @param string $session_id Session ID.
 	 */
 	public static function set_session_id( $session_id ) {
 		$expire = time() + absint( apply_filters( 'wcboost_wishlist_session_expire', MONTH_IN_SECONDS ) );
@@ -126,8 +130,8 @@ final class Session {
 	 *
 	 * @since 1.1.4
 	 *
-	 * @param string $user_login
-	 * @param \WP_User $user
+	 * @param string   $user_login User login.
+	 * @param \WP_User $user       User object.
 	 */
 	public function set_merge_guest_wishlist_flag( $user_login, $user ) {
 		if ( ! static::get_session_id() ) {

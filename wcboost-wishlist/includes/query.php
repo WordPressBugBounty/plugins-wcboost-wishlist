@@ -1,10 +1,18 @@
 <?php
+/**
+ * Handle wishlist query and rewrite rules
+ *
+ * @version 1.0.0
+ *
+ * @package WCBoost\Wishlist
+ */
+
 namespace WCBoost\Wishlist;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Wishlist Query class
+ * Class \WCBoost\Wishlist\Query
  */
 class Query {
 
@@ -74,7 +82,7 @@ class Query {
 	/**
 	 * Add rewrite rules for wishlists
 	 *
-	 * @param  string $base Wishilist page slug
+	 * @param  string $base Wishilist page slug.
 	 * @return void
 	 */
 	public function add_rewrite_rules( $base ) {
@@ -101,7 +109,7 @@ class Query {
 	 *
 	 * @since 1.1.6
 	 *
-	 * @param string $base Wishlist page slug
+	 * @param string $base Wishlist page slug.
 	 * @return void
 	 */
 	public function maybe_flush_rewrite_rules( $base ) {
@@ -129,7 +137,7 @@ class Query {
 	 *
 	 * @since  1.1.6
 	 *
-	 * @param  string $base Wishlist page slug
+	 * @param  string $base Wishlist page slug.
 	 * @return array
 	 */
 	private function get_rewrite_rules( $base ) {
@@ -170,7 +178,7 @@ class Query {
 	/**
 	 * Add public query vars for wishlist page.
 	 *
-	 * @param array $vars
+	 * @param array $vars Query vars.
 	 * @return array
 	 */
 	public function add_query_vars( $vars ) {
@@ -218,7 +226,7 @@ class Query {
 	 * Get wishlist instance.
 	 * If no wishlist ID is passed, the default wishlist will be returned.
 	 *
-	 * @param int|string $wishlist_id Wishlist id or token
+	 * @param int|string $wishlist_id Wishlist id or token.
 	 * @return \WCBoost\Wishlist\Wishlist
 	 */
 	public function get_wishlist( $wishlist_id = 0 ) {
@@ -258,8 +266,8 @@ class Query {
 	/**
 	 * Get the wishlish endpoint URL
 	 *
-	 * @param string $endpoint
-	 * @param string $value
+	 * @param string $endpoint Endpoint name.
+	 * @param string $value Endpoint value.
 	 *
 	 * @return string
 	 */

@@ -4,7 +4,7 @@
  * Description: Our WooCommerce Wishlist plugin enables customers to create personalized collections of products that they like but aren't ready to purchase immediately. Enhance the shopping experience by saving products for further consideration, making decisions easier than ever.
  * Plugin URI: https://wcboost.com/plugin/woocommerce-wishlist/?utm_source=wp-plugins&utm_campaign=plugin-uri&utm_medium=wp-dash
  * Author: WCBoost
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author URI: https://wcboost.com/?utm_source=wp-plugins&utm_campaign=author-uri&utm_medium=wp-dash
  *
  * Text Domain: wcboost-wishlist
@@ -12,9 +12,9 @@
  *
  * Requires PHP: 7.0
  * Requires at least: 4.5
- * Tested up to: 6.8.1
+ * Tested up to: 6.8.3
  * WC requires at least: 3.0.0
- * WC tested up to: 9.9.4
+ * WC tested up to: 10.2.2
  * License: GPLv3 or later
  *
  * @package Wishlist
@@ -24,12 +24,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'WCBOOST_WISHLIST_VERSION', '1.2.1' );
-define( 'WCBOOST_WISHLIST_FREE', plugin_basename( __FILE__ ) );
+if ( ! defined( 'WCBOOST_WISHLIST_VERSION' ) ) {
+	define( 'WCBOOST_WISHLIST_VERSION', '1.2.2' );
+}
 
 if ( ! defined( 'WCBOOST_WISHLIST_FILE' ) ) {
 	define( 'WCBOOST_WISHLIST_FILE', __FILE__ );
 }
+
+define( 'WCBOOST_WISHLIST_FREE', plugin_basename( __FILE__ ) );
 
 // Load packages.
 require_once __DIR__ . '/packages/autoload.php';
@@ -98,6 +101,6 @@ if ( ! function_exists( 'wcboost_wishlist_activate' ) ) {
 			\WCBoost\Wishlist\Install::install();
 		}
 	}
-}
 
-register_activation_hook( __FILE__,  'wcboost_wishlist_activate' );
+	register_activation_hook( __FILE__,  'wcboost_wishlist_activate' );
+}
