@@ -48,7 +48,7 @@ class Ajax_Handler {
 		if ( ! wc_string_to_bool( get_option( 'wcboost_wishlist_enable_guest_wishlist', 'yes' ) ) && ! is_user_logged_in() ) {
 			$data = [];
 
-			if ( 'redirect_to_account_page' == get_option( 'wcboost_wishlist_guest_behaviour', 'message' ) ) {
+			if ( 'redirect_to_account_page' === get_option( 'wcboost_wishlist_guest_behaviour', 'message' ) ) {
 				$data['redirect_url'] = wc_get_page_permalink( 'myaccount' );
 			} else {
 				$message = get_option( 'wcboost_wishlist_guest_message', __( 'You need to login to add products to your wishlist', 'wcboost-wishlist' ) );
@@ -68,7 +68,7 @@ class Ajax_Handler {
 		$product        = wc_get_product( $product_id );
 		$product_status = get_post_status( $product_id );
 
-		if ( ! $product || 'publish' != $product_status ) {
+		if ( ! $product || 'publish' !== $product_status ) {
 			wp_send_json_error();
 			exit;
 		}
@@ -148,22 +148,11 @@ class Ajax_Handler {
 	 * AJAX get wishlist fragments
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.4 Stop updating buttons when updating fragments.
 	 */
 	public static function get_wishlist_fragments() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$product_ids = ! empty( $_POST['product_ids'] ) ? array_map( 'absint', $_POST['product_ids'] ) : [];
-		$fragments   = self::get_refreshed_fragments();
-
-		if ( ! empty( $product_ids ) ) {
-			foreach ( $product_ids as $id ) {
-				if ( $id ) {
-					$button = do_shortcode( '[wcboost_wishlist_button product_id="' . $id . '"]' );
-					$fragments['.wcboost-wishlist-button[data-product_id="' . $id . '"]'] = $button;
-				}
-			}
-		}
-
-		$wishlist = Helper::get_wishlist();
+		$fragments = self::get_refreshed_fragments();
+		$wishlist  = Helper::get_wishlist();
 
 		wp_send_json_success( [
 			'fragments'      => $fragments,
@@ -192,9 +181,9 @@ class Ajax_Handler {
 	/**
 	 * Get product ids of the wishlist
 	 *
-	 * @param  string|bool $wishlist_id
+	 * @param  string|bool $wishlist_id Wishlist ID.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public static function get_wishlist_items( $wishlist_id = false ) {
 		$wishlist = Helper::get_wishlist( $wishlist_id );
@@ -202,7 +191,7 @@ class Ajax_Handler {
 		$data     = [];
 
 		foreach ( $items as $item ) {
-			$id = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
+			$id          = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
 			$data[ $id ] = [
 				'quantity'   => $item->get_quantity(),
 				'remove_url' => $item->get_remove_url(),

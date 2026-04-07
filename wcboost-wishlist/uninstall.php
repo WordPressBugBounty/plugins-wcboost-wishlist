@@ -1,7 +1,10 @@
 <?php
 /**
  * Uninstall plugin
+ *
+ * @package WCBoost\Wishlist
  */
+
 namespace WCBoost\Wishlist;
 
 // If uninstall not called from WordPress exit.
@@ -21,7 +24,7 @@ function uninstall() {
 	// Define table names.
 	$tables = [
 		$wpdb->prefix . 'wcboost_wishlists',
-		$wpdb->prefix . 'wcboost_wishlists_items'
+		$wpdb->prefix . 'wcboost_wishlists_items',
 	];
 
 	// Plugin options to remove.

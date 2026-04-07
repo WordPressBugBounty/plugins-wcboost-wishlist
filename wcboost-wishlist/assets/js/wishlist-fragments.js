@@ -82,12 +82,13 @@ jQuery( function( $ ) {
 		}
 	}
 
-	WCBoostWishlistFragments.prototype.refreshFragments = function( event, updateButtons, options ) {
+	WCBoostWishlistFragments.prototype.refreshFragments = function( event, refreshButtons, options ) {
 		var self = event ? event.data.wishlistFragmentsHandler : this;
 		var data = { time: new Date().getTime() };
 
-		if ( 'yes' === wcboost_wishlist_fragments_params.refresh_on_load || updateButtons ) {
-			data.product_ids = self.getProductIds();
+		// Since 1.2.4, we update buttons with JS instead of AJAX.
+		if ( 'yes' === wcboost_wishlist_fragments_params.refresh_on_load ) {
+			refreshButtons = true;
 		}
 
 		$.post( {
@@ -103,6 +104,10 @@ jQuery( function( $ ) {
 				}
 
 				self.updateFragments( response.data.fragments );
+
+				if ( refreshButtons ) {
+					self.updateButtons();
+				}
 
 				$( document.body ).trigger( 'wishlist_fragments_refreshed', [ response.data, options ] );
 			},
@@ -214,7 +219,7 @@ jQuery( function( $ ) {
 		var items = JSON.parse( sessionStorage.getItem( 'wcboost_wishlist_' + hash_key ) );
 
 		if ( items === null ) {
-			return;
+			items = {};
 		}
 
 		var self = event ? event.data.wishlistFragmentsHandler : this;

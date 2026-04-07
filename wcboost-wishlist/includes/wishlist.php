@@ -710,6 +710,11 @@ class Wishlist extends \WC_Data {
 			return $this->items;
 		}
 
+		// No need to load items for non-existing wishlists.
+		if ( ! $this->get_wishlist_id() ) {
+			return $this->items;
+		}
+
 		// Don't check for items count, because we need to load trashed items too (for the `restore` action).
 		try {
 			$this->get_data_store()->read_items( $this );

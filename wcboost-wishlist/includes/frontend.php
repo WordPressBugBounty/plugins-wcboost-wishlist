@@ -62,12 +62,12 @@ class Frontend {
 		add_action( 'wcboost_wishlist_footer', [ $this, 'link_edit_wishlist' ], 50 );
 
 		// Display button on single product page.
-		if ( 'theme' != wc_get_theme_support( 'wishlist::single_button_position' ) ) {
+		if ( 'theme' !== wc_get_theme_support( 'wishlist::single_button_position' ) ) {
 			add_action( 'woocommerce_before_single_product', [ $this, 'display_wishlist_button' ] );
 		}
 
 		// Display button on the loop. Default is hidden.
-		if ( 'theme' != wc_get_theme_support( 'wishlist::loop_button_position' ) ) {
+		if ( 'theme' !== wc_get_theme_support( 'wishlist::loop_button_position' ) ) {
 			switch ( get_option( 'wcboost_wishlist_loop_button_position' ) ) {
 				case 'before_add_to_cart':
 					add_action( 'woocommerce_after_shop_loop_item', [ $this, 'loop_add_to_wishlist_button' ], 9 );
@@ -210,15 +210,12 @@ class Frontend {
 			return;
 		}
 
-		$show_title = wc_string_to_bool( get_option( 'wcboost_wishlist_page_show_title', 'no' ) );
-		$show_desc  = wc_string_to_bool( get_option( 'wcboost_wishlist_page_show_desc', 'no' ) );
-		$visble     = $show_title || $show_desc;
+		$args    = Templates::get_header_template_args( $wishlist );
+		$visible = ! empty( $args['display_title'] ) || ! empty( $args['display_desc'] );
 
-		if ( ! apply_filters( 'wcboost_wishlist_display_header', $visble, $wishlist ) ) {
+		if ( ! apply_filters( 'wcboost_wishlist_display_header', $visible, $wishlist ) ) {
 			return;
 		}
-
-		$args = Templates::get_header_template_args( $wishlist );
 
 		Templates::load_template( 'wishlist/wishlist-header.php', $args );
 	}
@@ -442,16 +439,7 @@ class Frontend {
 			return;
 		}
 
-		$wishlist = Helper::get_wishlist( get_query_var( 'wishlist_token' ) );
-		$item     = new Wishlist_Item( $product );
-
-		if ( $wishlist->has_item( $item ) && 'hide' == get_option( 'wcboost_wishlist_exists_item_button_behaviour' ) ) {
-			return;
-		}
-
-		$args = Templates::get_button_template_args( $wishlist, $item );
-
-		Templates::load_template( 'loop/add-to-wishlist.php', $args );
+		$this->wishlist_button( $product );
 	}
 
 	/**
@@ -464,17 +452,40 @@ class Frontend {
 			return;
 		}
 
+		$this->wishlist_button( $product, 'single' );
+	}
+
+	/**
+	 * Display the add to wishlist button.
+	 *
+	 * @since 1.2.4
+	 *
+	 * @param int|WC_Product $product The product object or ID.
+	 * @param string         $template The template to use, 'single' or 'loop'. Default is 'loop'.
+	 */
+	public function wishlist_button( $product = false, $template = 'loop' ) {
+		$product = $product ? wc_get_product( $product ) : $GLOBALS['product'];
+
+		if ( ! $product ) {
+			return;
+		}
+
 		$wishlist = Helper::get_wishlist( get_query_var( 'wishlist_token' ) );
 		$item     = new Wishlist_Item( $product );
 
-		if ( $wishlist->has_item( $item ) && 'hide' == get_option( 'wcboost_wishlist_exists_item_button_behaviour' ) ) {
+		if ( $wishlist->has_item( $item ) && 'hide' === get_option( 'wcboost_wishlist_exists_item_button_behaviour' ) ) {
 			return;
 		}
 
 		$args = Templates::get_button_template_args( $wishlist, $item );
-		$args['class'] .= ' wcboost-wishlist-single-button';
 
-		Templates::load_template( 'single-product/add-to-wishlist.php', $args );
+		if ( 'single' === $template ) {
+			$args['class'] .= ' wcboost-wishlist-single-button';
+
+			Templates::load_template( 'single-product/add-to-wishlist.php', $args );
+		} else {
+			Templates::load_template( 'loop/add-to-wishlist.php', $args );
+		}
 	}
 
 	/**

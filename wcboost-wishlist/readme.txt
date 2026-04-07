@@ -2,11 +2,11 @@
 Contributors: wcboost
 Tags: woocommerce wishlist, wishlist, products, e-commerce, woocommerce
 Tested up to: 6.9
-Stable tag: 1.2.3
+Stable tag: 1.3.0
 Requires PHP: 7.0
 Requires at least: 4.5
 WC requires at least: 3.0.0
-WC tested up to: 10.4
+WC tested up to: 10.6
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -93,6 +93,13 @@ Following the standards of WordPress and WooCommerce, you can find all the setti
 6. Visual options can be found in the Customizer
 
 == Changelog ==
+
+= 1.3.0 =
+- Enhancement - Consolidate wishlist button rendering for single product and loop views into a single unified method.
+- Enhancement - Refactor wishlist fragment handling to improve button update logic and code consistency.
+- Enhancement - Refactor wishlist header display logic to use template arguments for visibility checks.
+- Fix - Prevent incorrect error log entries when loading items from non-existing wishlists.
+- Tweak – WooCommerce 10.6 compatibility.
 
 = 1.2.3 =
 - Enhancement - Update Wishlist edit template to allow title customization.
