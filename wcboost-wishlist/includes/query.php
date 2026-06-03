@@ -122,7 +122,7 @@ class Query {
 		if ( $stored_hash !== $rules_hash ) {
 			$current_rules = get_option( 'rewrite_rules' );
 
-			// Only flush if there are actual differences
+			// Only flush if there are actual differences.
 			if ( ! is_array( $current_rules ) || ! empty( array_diff( array_keys( $rewrite_rules ), array_keys( $current_rules ) ) ) ) {
 				flush_rewrite_rules();
 			}
@@ -146,14 +146,14 @@ class Query {
 
 		// Edit wishlist rewrite rule.
 		if ( ! empty( $query_vars['edit-wishlist'] ) ) {
-			$rewrite_rules['^' . $base . '/' . $query_vars['edit-wishlist'] . '(/(.*))?/?$'] = 'index.php?pagename=' . $base . '&wishlist_token=$matches[2]&' . $query_vars['edit-wishlist'] . '=$matches[2]';
+			$rewrite_rules[ '^' . $base . '/' . $query_vars['edit-wishlist'] . '(/(.*))?/?$' ] = 'index.php?pagename=' . $base . '&wishlist_token=$matches[2]&' . $query_vars['edit-wishlist'] . '=$matches[2]';
 		}
 
 		// Paged rewrite rule.
-		$rewrite_rules['^' . $base . '(/(.*))?/page/([0-9]{1,})/?$'] = 'index.php?pagename=' . $base . '&wishlist_token=$matches[2]&paged=$matches[3]';
+		$rewrite_rules[ '^' . $base . '(/(.*))?/page/([0-9]{1,})/?$' ] = 'index.php?pagename=' . $base . '&wishlist_token=$matches[2]&paged=$matches[3]';
 
 		// View wishlist rewrite rule have to be last because it is the default.
-		$rewrite_rules['^' . $base . '(/(.*))?/?$'] = 'index.php?pagename=' . $base . '&wishlist_token=$matches[2]';
+		$rewrite_rules[ '^' . $base . '(/(.*))?/?$' ] = 'index.php?pagename=' . $base . '&wishlist_token=$matches[2]';
 
 		return apply_filters( 'wcboost_wishlist_rewrite_rules', $rewrite_rules, $base );
 	}
@@ -165,7 +165,7 @@ class Query {
 	 */
 	public function add_endpoints() {
 		foreach ( $this->get_query_vars() as $key => $var ) {
-			if ( 'wishlist_token' == $key ) {
+			if ( 'wishlist_token' === $key ) {
 				continue;
 			}
 
@@ -255,7 +255,7 @@ class Query {
 		$wishlist_ids = \WC_Data_Store::load( 'wcboost_wishlist' )->get_wishlist_ids();
 		$wishlists    = [];
 
-		while ( count( $wishlist_ids ) ) {
+		while ( ! empty( $wishlist_ids ) ) {
 			$id          = array_pop( $wishlist_ids );
 			$wishlists[] = new Wishlist( $id );
 		}
@@ -273,8 +273,8 @@ class Query {
 	 */
 	public function get_endpoint_url( $endpoint, $value = '' ) {
 		$wishlist_url = wc_get_page_permalink( 'wishlist' );
-		$query_vars = $this->get_query_vars();
-		$endpoint   = ! empty( $query_vars[ $endpoint ] ) ? $query_vars[ $endpoint ] : $endpoint;
+		$query_vars   = $this->get_query_vars();
+		$endpoint     = ! empty( $query_vars[ $endpoint ] ) ? $query_vars[ $endpoint ] : $endpoint;
 
 		if ( get_option( 'permalink_structure' ) ) {
 			if ( strstr( $wishlist_url, '?' ) ) {
@@ -287,7 +287,7 @@ class Query {
 			$url = trailingslashit( $wishlist_url );
 
 			if ( $value ) {
-				$url .= 'wishlist-token' == $endpoint || 'wishlist_token' == $endpoint ? user_trailingslashit( $value ) : trailingslashit( $endpoint ) . user_trailingslashit( $value );
+				$url .= 'wishlist-token' === $endpoint || 'wishlist_token' === $endpoint ? user_trailingslashit( $value ) : trailingslashit( $endpoint ) . user_trailingslashit( $value );
 			} else {
 				$url .= user_trailingslashit( $endpoint );
 			}

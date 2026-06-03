@@ -106,7 +106,7 @@ class Frontend {
 	/**
 	 * Tell search engines stop indexing the URL with add-to-wishlist param.
 	 *
-	 * @param array $robots
+	 * @param array $robots Associative array of robots directives.
 	 * @return array
 	 */
 	public function add_noindex_robots( $robots ) {
@@ -142,7 +142,7 @@ class Frontend {
 			wp_enqueue_style( 'wcboost-wishlist' );
 		}
 
-		if ( 'custom' == get_option( 'wcboost_wishlist_button_type' ) ) {
+		if ( 'custom' === get_option( 'wcboost_wishlist_button_type' ) ) {
 			wp_add_inline_style( 'wcboost-wishlist', $this->get_custom_button_css() );
 		}
 
@@ -173,7 +173,7 @@ class Frontend {
 	/**
 	 * Add CSS classes to the body element on wishlist page
 	 *
-	 * @param array $classes
+	 * @param array $classes Body classes.
 	 * @return array
 	 */
 	public function body_class( $classes ) {
@@ -258,7 +258,7 @@ class Frontend {
 	/**
 	 * Display the wishlist title html.
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return void
 	 */
 	public function wishlist_title( $wishlist ) {
@@ -274,7 +274,7 @@ class Frontend {
 	/**
 	 * Display the wishlist description
 	 *
-	 * @param \WCBoost\Wishlist\Wishlis $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return void
 	 */
 	public function wishlist_description( $wishlist ) {
@@ -289,6 +289,9 @@ class Frontend {
 
 	/**
 	 * Display social sharing buttons on wishlist page
+	 *
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
+	 * @return void
 	 */
 	public function share_buttons( $wishlist ) {
 		$wishlist = $wishlist ? $wishlist : Helper::get_wishlist( get_query_var( 'wishlist_token' ) );
@@ -297,7 +300,7 @@ class Frontend {
 			return;
 		}
 
-		$socials = ['facebook', 'twitter', 'linkedin', 'tumblr', 'reddit', 'stumbleupon', 'telegram', 'whatsapp', 'pocket', 'digg', 'vk', 'email', 'link'];
+		$socials = [ 'facebook', 'twitter', 'linkedin', 'tumblr', 'reddit', 'stumbleupon', 'telegram', 'whatsapp', 'pocket', 'digg', 'vk', 'email', 'link' ];
 		$default = array_combine( $socials, array_fill( 0, count( $socials ), 'yes' ) );
 		$enabled = get_option( 'wcboost_wishlist_share_socials', [] );
 		$enabled = wp_parse_args( $enabled, $default );
@@ -309,7 +312,7 @@ class Frontend {
 		}
 
 		// Don't display the share buttons if the wishlist is not viewed by the owner.
-		if ( 'shared' == $wishlist->get_status()  && ! $wishlist->can_edit() ) {
+		if ( 'shared' === $wishlist->get_status() && ! $wishlist->can_edit() ) {
 			return;
 		}
 
@@ -325,7 +328,7 @@ class Frontend {
 	/**
 	 * Display the link to edit the wishlist.
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return void
 	 */
 	public function link_edit_wishlist( $wishlist ) {
@@ -350,7 +353,7 @@ class Frontend {
 	 * Load the form for deleting a wishlist.
 	 *
 	 * @deprecated 1.2.2
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return void
 	 */
 	public function form_delete_wishlist( $wishlist ) {
@@ -380,7 +383,7 @@ class Frontend {
 	 *
 	 * @since 1.2.2
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return void
 	 */
 	public function link_remove_wishlist( $wishlist ) {
@@ -496,14 +499,14 @@ class Frontend {
 	public function get_custom_button_css() {
 		$default_style = wp_parse_args( get_option( 'wcboost_wishlist_button_style' ), [
 			'background_color' => '#333333',
-			'border_color' => '#333333',
-			'text_color' => '#ffffff',
+			'border_color'     => '#333333',
+			'text_color'       => '#ffffff',
 		] );
 
 		$hover_style = wp_parse_args( get_option( 'wcboost_wishlist_button_hover_style' ), [
 			'background_color' => '#111111',
-			'border_color' => '#111111',
-			'text_color' => '#ffffff',
+			'border_color'     => '#111111',
+			'text_color'       => '#ffffff',
 		] );
 
 		$css = ':root {
@@ -521,8 +524,8 @@ class Frontend {
 	/**
 	 * Display wishlist buttons in the widget.
 	 *
-	 * @param  \WCBoost\Wishlist\Wishlist $wishlist
-	 * @param  array $args
+	 * @param  \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
+	 * @param  array                      $args     Widget arguments.
 	 * @return void
 	 */
 	public function widget_buttons( $wishlist, $args ) {
@@ -545,8 +548,8 @@ class Frontend {
 	 *
 	 * @deprecated 1.2.2
 	 *
-	 * @param Wishlist $wishlist
-	 * @param Wishlist_Item $item
+	 * @param Wishlist      $wishlist Wishlist object.
+	 * @param Wishlist_Item $item     Wishlist item object.
 	 * @return array
 	 */
 	public function get_button_template_args( $wishlist, $item ) {

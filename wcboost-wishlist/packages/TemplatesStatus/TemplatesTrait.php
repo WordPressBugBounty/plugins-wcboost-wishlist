@@ -6,6 +6,7 @@
  *
  * @package WCBoost\Packages\TemplatesStatus
  */
+
 namespace WCBoost\Packages\TemplatesStatus;
 
 trait TemplatesTrait {
@@ -20,15 +21,15 @@ trait TemplatesTrait {
 	/**
 	 * Add the path to template files
 	 *
-	 * @param  string $plugin_name
-	 * @param  string $templates_path
+	 * @param  string $plugin_name    Plugin name.
+	 * @param  string $templates_path Path to the plugin template files.
 	 *
 	 * @return void
 	 */
 	public function add_templates_path( $plugin_name, $templates_path ) {
 		$this->paths[ $plugin_name ] = $templates_path;
 
-		// Invalidate template status cache when paths change
+		// Invalidate template status cache when paths change.
 		$this->delete_templates_status_cache();
 	}
 
@@ -58,14 +59,14 @@ trait TemplatesTrait {
 	 * Check if the active theme contains outdated templates of this plugin.
 	 *
 	 * @param string $fields Deprecated. The returned fields.
-	 * 		Leave it empty to get full data.
-	 * 		Set as "outdated" for faster checking.
-	 * 		Set as "plugins" to get full list of plugins.
+	 *      Leave it empty to get full data.
+	 *      Set as "outdated" for faster checking.
+	 *      Set as "plugins" to get full list of plugins.
 	 *
 	 * @return null|array The result with parameters:
-	 *		bool  "outdated" - True if the theme contains outdated templates
-	 *		array "plugins" - List of plugins containing new templates
-	 *		array "files" - List of overrided templates
+	 *      bool  "outdated" - True if the theme contains outdated templates
+	 *      array "plugins" - List of plugins containing new templates
+	 *      array "files" - List of overrided templates
 	 */
 	public function check_override_templates( $fields = '' ) {
 		if ( empty( $this->paths ) ) {
@@ -105,7 +106,7 @@ trait TemplatesTrait {
 						$theme_version = \WC_Admin_Status::get_file_version( $theme_file );
 
 						if ( $core_version && $theme_version && version_compare( $theme_version, $core_version, '<' ) ) {
-							$is_outdated = true;
+							$is_outdated        = true;
 							$outdated_plugins[] = $plugin_name;
 						}
 

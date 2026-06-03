@@ -85,7 +85,7 @@ class Shortcodes {
 		$wishlist = Helper::get_wishlist( $atts['wishlist'] );
 		$item     = new Wishlist_Item( $_product );
 
-		if ( $wishlist->has_item( $item ) && 'hide' == get_option( 'wcboost_wishlist_exists_item_button_behaviour' ) ) {
+		if ( $wishlist->has_item( $item ) && 'hide' === get_option( 'wcboost_wishlist_exists_item_button_behaviour' ) ) {
 			return '';
 		}
 

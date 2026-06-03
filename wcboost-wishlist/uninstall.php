@@ -60,8 +60,8 @@ if ( ! is_multisite() ) {
 	$original_blog_id = get_current_blog_id();
 
 	try {
-		foreach ( $blog_ids as $blog_id ) {
-			switch_to_blog( $blog_id );
+		foreach ( $blog_ids as $current_blog_id ) {
+			switch_to_blog( $current_blog_id );
 			uninstall();
 		}
 	} catch ( \Exception $e ) {

@@ -3,7 +3,10 @@
  * Handle admin notices
  *
  * @since 1.1.0
+ *
+ * @package WCBoost\Wishlist
  */
+
 namespace WCBoost\Wishlist\Admin;
 
 use WCBoost\Packages\TemplatesStatus\Notice as TemplatesStatusNotice;

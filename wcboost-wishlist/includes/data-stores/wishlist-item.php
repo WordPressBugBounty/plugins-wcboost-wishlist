@@ -91,7 +91,7 @@ class Wishlist_Item {
 
 		$changes = $item->get_changes();
 
-		if ( array_intersect( ['status', 'quantity', 'wishlist_id', 'date_expires'], array_keys( $changes ) ) ) {
+		if ( array_intersect( [ 'status', 'quantity', 'wishlist_id', 'date_expires' ], array_keys( $changes ) ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$wpdb->prefix . 'wcboost_wishlist_items',
@@ -102,7 +102,7 @@ class Wishlist_Item {
 					'date_expires' => $item->get_date_expires() ? $item->get_date_expires()->format( 'Y-m-d H:i:s' ) : '',
 				],
 				[
-					'item_id' => $item->get_item_id( 'edit' )
+					'item_id' => $item->get_item_id( 'edit' ),
 				]
 			);
 		}
@@ -146,7 +146,7 @@ class Wishlist_Item {
 	 *
 	 * @param \WCBoost\Wishlist\Wishlist_Item $item Wishlist object.
 	 *
-	 * @throws Exception If invalid order item.
+	 * @throws \Exception If invalid order item.
 	 */
 	public function read( &$item ) {
 		global $wpdb;

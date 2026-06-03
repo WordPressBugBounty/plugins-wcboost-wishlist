@@ -247,7 +247,7 @@ class Wishlist extends \WC_Data {
 
 		$all_valid = true;
 		foreach ( $status_parts as $part ) {
-			if ( ! in_array( $part, $valid_statuses ) ) {
+			if ( ! in_array( $part, $valid_statuses, true ) ) {
 				$all_valid = false;
 				break;
 			}
@@ -390,12 +390,12 @@ class Wishlist extends \WC_Data {
 	public function get_status( $context = 'view' ) {
 		$status = $this->get_prop( 'status', $context );
 
-		// Return raw status for edit context (used by data store)
+		// Return raw status for edit context (used by data store).
 		if ( 'edit' === $context ) {
 			return $status;
 		}
 
-		// Return only primary status for view context (public API)
+		// Return only primary status for view context (public API).
 		return explode( ',', $status )[0];
 	}
 
@@ -505,10 +505,10 @@ class Wishlist extends \WC_Data {
 	 * @return bool Whether the wishlist is restored.
 	 */
 	public function restore() {
-		if ( $this->data_store && 'trash' == $this->get_status() ) {
+		if ( $this->data_store && 'trash' === $this->get_status() ) {
 			do_action( 'wcboost_wishlist_restore', $this );
 
-			// Extract previous status from multi-status format
+			// Extract previous status from multi-status format.
 			$full_status     = $this->get_prop( 'status' );
 			$status_parts    = explode( ',', $full_status );
 			$previous_status = isset( $status_parts[1] ) ? trim( $status_parts[1] ) : 'private';
@@ -804,7 +804,7 @@ class Wishlist extends \WC_Data {
 	 * @return bool Whether the wishlist is shareable.
 	 */
 	public function is_shareable() {
-		return in_array( $this->get_status(), [ 'publish', 'shared' ] );
+		return in_array( $this->get_status(), [ 'publish', 'shared' ], true );
 	}
 
 	/**

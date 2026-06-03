@@ -37,17 +37,17 @@ class Manager {
 	 * @var array
 	 */
 	protected $package_map = [
-		'utilities\singleton-trait' => ['Utilities\\SingletonTrait'],
-		'templates-status' => ['TemplatesStatus\\Status', 'TemplatesStatus\\Notice'],
-		'admin-page' => ['AdminPage\\WCBoostAdmin', 'AdminPage\\Section'],
-		'subscription-client' => ['SubscriptionClient\\Updater', 'SubscriptionClient\\Activation'],
+		'utilities\singleton-trait' => [ 'Utilities\\SingletonTrait' ],
+		'templates-status'          => [ 'TemplatesStatus\\Status', 'TemplatesStatus\\Notice' ],
+		'admin-page'                => [ 'AdminPage\\WCBoostAdmin', 'AdminPage\\Section' ],
+		'subscription-client'       => [ 'SubscriptionClient\\Updater', 'SubscriptionClient\\Activation' ],
 	];
 
 	/**
 	 * Packages manager constructor
 	 *
 	 * @deprecated 2.0.0 Use direct class autoloading instead.
-	 * @param string $dir The base directory path
+	 * @param string $dir The base directory path.
 	 */
 	public function __construct( $dir = __DIR__ ) {
 		$this->base = untrailingslashit( $dir );
@@ -58,35 +58,35 @@ class Manager {
 	 * Loads and initializes the package
 	 *
 	 * @deprecated 2.0.0 Use direct class autoloading instead.
-	 * @param string $name The package name
+	 * @param string $name The package name.
 	 * @return void
 	 */
 	public function load_package( $name ) {
-		if ( ! isset( $this->package_map[$name] ) ) {
+		if ( ! isset( $this->package_map[ $name ] ) ) {
 			return;
 		}
 
-		// Package already loaded
+		// Package already loaded.
 		if ( array_key_exists( $name, static::$packages ) ) {
 			return;
 		}
 
-		// Load all classes in the package
-		foreach ( $this->package_map[$name] as $class ) {
+		// Load all classes in the package.
+		foreach ( $this->package_map[ $name ] as $class ) {
 			$full_class = 'WCBoost\\Packages\\' . $class;
 			if ( ! class_exists( $full_class ) ) {
 				$this->deprecated_notice();
 			}
 		}
 
-		static::$packages[$name] = true;
+		static::$packages[ $name ] = true;
 	}
 
 	/**
 	 * Get package instance
 	 *
 	 * @deprecated 2.0.0 Use direct class instantiation instead.
-	 * @param string $name
+	 * @param string $name The package name.
 	 * @return mixed|null
 	 */
 	public function get( $name ) {
@@ -98,23 +98,23 @@ class Manager {
 	 * Get the package instance
 	 *
 	 * @deprecated 2.0.0 Use direct class instantiation instead.
-	 * @param string $name
+	 * @param string $name The package name.
 	 * @return mixed|null
 	 */
 	public static function package( $name ) {
-		if ( ! isset( static::$packages[$name] ) ) {
+		if ( ! isset( static::$packages[ $name ] ) ) {
 			return null;
 		}
 
-		// Map old package names to their main class
+		// Map old package names to their main class.
 		$class_map = [
-			'templates-status' => 'WCBoost\\Packages\\TemplatesStatus\\Status',
-			'admin-page' => 'WCBoost\\Packages\\AdminPage\\WCBoostAdmin',
+			'templates-status'    => 'WCBoost\\Packages\\TemplatesStatus\\Status',
+			'admin-page'          => 'WCBoost\\Packages\\AdminPage\\WCBoostAdmin',
 			'subscription-client' => 'WCBoost\\Packages\\SubscriptionClient\\Activation',
 		];
 
-		if ( isset( $class_map[$name] ) && class_exists( $class_map[$name] ) ) {
-			return call_user_func( [$class_map[$name], 'instance'] );
+		if ( isset( $class_map[ $name ] ) && class_exists( $class_map[ $name ] ) ) {
+			return call_user_func( [ $class_map[ $name ], 'instance' ] );
 		}
 
 		return null;

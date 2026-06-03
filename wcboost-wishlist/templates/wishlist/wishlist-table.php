@@ -46,7 +46,7 @@ if ( ! isset( $wishlist ) ) {
 	<tbody>
 		<?php
 		foreach ( $wishlist->get_items() as $item_key => $item ) :
-			/** @var WC_Product */
+			/** @var WC_Product $_product */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 			$_product = $item->get_product();
 
 			if ( ! $_product || ! $_product->exists() ) {

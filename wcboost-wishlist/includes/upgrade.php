@@ -29,7 +29,7 @@ class Upgrade {
 
 		// Add date_modified column.
 		$column_name = 'date_modified';
-		$table_name = $wpdb->wishlists;
+		$table_name  = $wpdb->wishlists;
 
 		// phpcs:disable
 		$row = $wpdb->get_results(

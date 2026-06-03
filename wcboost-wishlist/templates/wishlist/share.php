@@ -16,7 +16,7 @@ do_action( 'wcboost_wishlist_before_share_buttons' );
 
 <div class="wcboost-wishlist-share wishlist-share">
 	<?php if ( ! empty( $args['title'] ) ) : ?>
-		<h4 class="wishlist-share__title" aria-label="<?php esc_attr_e( 'Share the wishlist', 'wcboost-wishlist' ) ?>"><?php echo esc_html( $args['title'] ); ?></h4>
+		<h4 class="wishlist-share__title" aria-label="<?php esc_attr_e( 'Share the wishlist', 'wcboost-wishlist' ); ?>"><?php echo esc_html( $args['title'] ); ?></h4>
 	<?php endif; ?>
 
 	<ul class="wishlist-share__buttons">

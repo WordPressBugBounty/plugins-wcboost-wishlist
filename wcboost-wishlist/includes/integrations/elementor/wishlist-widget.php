@@ -87,7 +87,7 @@ class Wishlist_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_wishlist',
 			[
-				'label' => esc_html__( 'Wishlist', 'wcboost-wishlist' )
+				'label' => esc_html__( 'Wishlist', 'wcboost-wishlist' ),
 			]
 		);
 
@@ -119,23 +119,23 @@ class Wishlist_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'title_align',
 			[
-				'label'   => esc_html__( 'Alignment', 'wcboost-wishlist' ),
-				'type'    => Controls_Manager::CHOOSE,
-				'options' => [
-					'left' => [
+				'label'     => esc_html__( 'Alignment', 'wcboost-wishlist' ),
+				'type'      => Controls_Manager::CHOOSE,
+				'options'   => [
+					'left'   => [
 						'title' => esc_html__( 'Left', 'wcboost-wishlist' ),
-						'icon' => 'eicon-text-align-left',
+						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
 						'title' => esc_html__( 'Center', 'wcboost-wishlist' ),
-						'icon' => 'eicon-text-align-center',
+						'icon'  => 'eicon-text-align-center',
 					],
-					'right' => [
+					'right'  => [
 						'title' => esc_html__( 'Right', 'wcboost-wishlist' ),
-						'icon' => 'eicon-text-align-right',
+						'icon'  => 'eicon-text-align-right',
 					],
 				],
-				'default' => '',
+				'default'   => '',
 				'selectors' => [
 					'{{WRAPPER}} .wcboost-wishlist-title' => 'text-align: {{VALUE}};',
 				],

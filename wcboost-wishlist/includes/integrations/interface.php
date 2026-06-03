@@ -4,6 +4,7 @@
  *
  * @package WCBoost\Wishlist
  */
+
 namespace WCBoost\Wishlist\Integrations;
 
 defined( 'ABSPATH' ) || exit;

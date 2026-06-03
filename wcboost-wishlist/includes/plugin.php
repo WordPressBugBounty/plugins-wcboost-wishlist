@@ -35,22 +35,22 @@ final class Plugin {
 	/**
 	 * The single instance of the class.
 	 *
-	 * @var \WCBoost\Wishlist\Plugin
+	 * @var static
 	 */
-	protected static $_instance = null;
+	protected static $instance = null;
 
 	/**
 	 * Main instance. Ensures only one instance of the plugin class is loaded or can be loaded.
 	 *
 	 * @static
-	 * @return \WCBoost\Wishlist\Plugin
+	 * @return static
 	 */
 	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**
@@ -72,7 +72,7 @@ final class Plugin {
 	 *
 	 * @since 1.0.13
 	 *
-	 * @param  string $prop
+	 * @param  string $prop Property name.
 	 *
 	 * @return mixed
 	 */
@@ -80,11 +80,9 @@ final class Plugin {
 		switch ( $prop ) {
 			case 'version':
 				return WCBOOST_WISHLIST_VERSION;
-				break;
 
 			case 'packages':
 				return $this->packages_manager;
-				break;
 		}
 	}
 
@@ -92,7 +90,6 @@ final class Plugin {
 	 * Constructor
 	 */
 	public function __construct() {
-		// $this->load_packages();
 		$this->includes();
 		$this->init();
 		$this->init_hooks();
@@ -101,6 +98,7 @@ final class Plugin {
 	/**
 	 * Plugin URL getter.
 	 *
+	 * @param  string $path Optional. Path to append to the plugin URL.
 	 * @return string
 	 */
 	public function plugin_url( $path = '/' ) {
@@ -215,7 +213,7 @@ final class Plugin {
 	/**
 	 * Register custom plugin Data Stores classes
 	 *
-	 * @param array $data_stores
+	 * @param array $data_stores Registered data stores.
 	 * @return array
 	 */
 	public function register_data_stores( $data_stores ) {
@@ -239,7 +237,7 @@ final class Plugin {
 	/**
 	 * Add new setting page to WooCommerce > Settings
 	 *
-	 * @param array $pages
+	 * @param array $pages Registered settings pages.
 	 * @return array
 	 */
 	public function setting_page( $pages ) {

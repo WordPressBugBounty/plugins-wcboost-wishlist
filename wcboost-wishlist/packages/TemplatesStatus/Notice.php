@@ -6,6 +6,7 @@
  *
  * @package WCBoost\Packages\TemplatesStatus
  */
+
 namespace WCBoost\Packages\TemplatesStatus;
 
 use WCBoost\Packages\TemplatesStatus\TemplatesTrait;
@@ -37,7 +38,7 @@ abstract class Notice {
 	 *
 	 * @return string
 	 */
-	protected abstract function get_notice_name();
+	abstract protected function get_notice_name();
 
 	/**
 	 * Add the paths of template files.
@@ -49,7 +50,7 @@ abstract class Notice {
 	 *
 	 * @return void
 	 */
-	public abstract function setup_template_paths();
+	abstract public function setup_template_paths();
 
 	/**
 	 * Add notice about outdated templates

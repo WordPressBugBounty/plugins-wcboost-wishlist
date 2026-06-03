@@ -1,12 +1,12 @@
 === WCBoost - Wishlist ===
 Contributors: wcboost
 Tags: woocommerce wishlist, wishlist, products, e-commerce, woocommerce
-Tested up to: 6.9
-Stable tag: 1.3.0
+Tested up to: 7.0
+Stable tag: 1.3.1
 Requires PHP: 7.0
 Requires at least: 4.5
 WC requires at least: 3.0.0
-WC tested up to: 10.6
+WC tested up to: 10.8
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -93,6 +93,11 @@ Following the standards of WordPress and WooCommerce, you can find all the setti
 6. Visual options can be found in the Customizer
 
 == Changelog ==
+
+= 1.3.1 =
+- Enhancement - Prime per-item cache to avoid N+1 queries on item retrieval.
+- Tweak - WordPress 7.0 compatibility.
+- Tweak – WooCommerce 10.8 compatibility.
 
 = 1.3.0 =
 - Enhancement - Consolidate wishlist button rendering for single product and loop views into a single unified method.

@@ -33,7 +33,7 @@ class Helper {
 	 *
 	 * @since 1.1.2 Moved to class \WCBoost\Wishlist\Session
 	 *
-	 * @param string $session_id
+	 * @param string $session_id Guest session ID.
 	 */
 	public static function set_session_id( $session_id ) {
 		Session::set_session_id( $session_id );
@@ -66,7 +66,8 @@ class Helper {
 	/**
 	 * Get svg icon for the add to wishlist button.
 	 *
-	 * @param string $type
+	 * @param string $icon Icon name.
+	 * @param int    $size Icon size in pixels.
 	 * @return string
 	 */
 	public static function get_icon( $icon = 'add', $size = 24 ) {
@@ -164,8 +165,8 @@ class Helper {
 	/**
 	 * Get wishlist icon
 	 *
-	 * @param bool $filled
-	 * @param int  $size
+	 * @param bool $filled Whether to return the filled variant of the icon.
+	 * @param int  $size   Icon size in pixels.
 	 * @return string
 	 */
 	public static function get_wishlist_icon( $filled = false, $size = 24 ) {
@@ -176,10 +177,13 @@ class Helper {
 		}
 
 		if ( 'custom' === $icon ) {
-			$custom = get_option( 'wcboost_wishlist_button_icon_custom', [ 'default' => '', 'added' => '' ] );
+			$custom = get_option( 'wcboost_wishlist_button_icon_custom', [
+				'default' => '',
+				'added'   => '',
+			] );
 			$url    = $filled ? $custom['added'] : $custom['default'];
 			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-			$svg    = $url ? '<img src="' . esc_url( $url ) . '" alt="' . esc_attr__( 'Wishlist', 'wcboost-wishlist' ) . '" />' : '';
+			$svg = $url ? '<img src="' . esc_url( $url ) . '" alt="' . esc_attr__( 'Wishlist', 'wcboost-wishlist' ) . '" />' : '';
 		} else {
 			$icon = $filled ? $icon . '-filled' : $icon;
 			$svg  = self::get_icon( $icon, $size );
@@ -197,11 +201,11 @@ class Helper {
 	/**
 	 * Get button text
 	 *
-	 * @param string $type
+	 * @param string $type Button type. One of 'add', 'remove', or 'view'.
 	 * @return string
 	 */
 	public static function get_button_text( $type = 'add' ) {
-		$type = in_array( $type, [ 'add', 'remove', 'view' ] ) ? $type : 'add';
+		$type        = in_array( $type, [ 'add', 'remove', 'view' ], true ) ? $type : 'add';
 		$button_text = wp_parse_args( get_option( 'wcboost_wishlist_button_text', [] ), [
 			'add'    => __( 'Add to wishlist', 'wcboost-wishlist' ),
 			'remove' => __( 'Remove from wishlist', 'wcboost-wishlist' ),
@@ -216,8 +220,8 @@ class Helper {
 	/**
 	 * Get social sharing url
 	 *
-	 * @param string $social
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param string                     $social   Social network key.
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Optional. Wishlist object.
 	 * @return string
 	 */
 	public static function get_share_url( $social, $wishlist = false ) {
@@ -235,23 +239,38 @@ class Helper {
 				break;
 
 			case 'twitter':
-				$url = add_query_arg( [ 'url' => urlencode( $wishlist_url ), 'text' => $wishlist->get_wishlist_title() ], 'https://twitter.com/intent/tweet' );
+				$url = add_query_arg( [
+					'url'  => urlencode( $wishlist_url ),
+					'text' => $wishlist->get_wishlist_title(),
+				], 'https://twitter.com/intent/tweet' );
 				break;
 
 			case 'linkedin':
-				$url = add_query_arg( [ 'url' => urlencode( $wishlist_url ), 'title' => $wishlist->get_wishlist_title() ], 'https://www.linkedin.com/shareArticle' );
+				$url = add_query_arg( [
+					'url'   => urlencode( $wishlist_url ),
+					'title' => $wishlist->get_wishlist_title(),
+				], 'https://www.linkedin.com/shareArticle' );
 				break;
 
 			case 'tumblr':
-				$url = add_query_arg( [ 'url' => urlencode( $wishlist_url ), 'name' => $wishlist->get_wishlist_title() ], 'https://www.tumblr.com/share/link' );
+				$url = add_query_arg( [
+					'url'  => urlencode( $wishlist_url ),
+					'name' => $wishlist->get_wishlist_title(),
+				], 'https://www.tumblr.com/share/link' );
 				break;
 
 			case 'reddit':
-				$url = add_query_arg( [ 'url' => urlencode( $wishlist_url ), 'title' => $wishlist->get_wishlist_title() ], 'https://reddit.com/submit' );
+				$url = add_query_arg( [
+					'url'   => urlencode( $wishlist_url ),
+					'title' => $wishlist->get_wishlist_title(),
+				], 'https://reddit.com/submit' );
 				break;
 
 			case 'stumbleupon':
-				$url = add_query_arg( [ 'url' => urlencode( $wishlist_url ), 'title' => $wishlist->get_wishlist_title() ], 'https://www.stumbleupon.com/submit' );
+				$url = add_query_arg( [
+					'url'   => urlencode( $wishlist_url ),
+					'title' => $wishlist->get_wishlist_title(),
+				], 'https://www.stumbleupon.com/submit' );
 				break;
 
 			case 'telegram':
@@ -263,7 +282,10 @@ class Helper {
 				break;
 
 			case 'pocket':
-				$url = add_query_arg( [ 'url' => urlencode( $wishlist_url ), 'title' => $wishlist->get_wishlist_title() ], 'https://getpocket.com/save' );
+				$url = add_query_arg( [
+					'url'   => urlencode( $wishlist_url ),
+					'title' => $wishlist->get_wishlist_title(),
+				], 'https://getpocket.com/save' );
 				break;
 
 			case 'digg':
@@ -289,8 +311,8 @@ class Helper {
 	/**
 	 * Get social sharing link
 	 *
-	 * @param string $social
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param string                     $social   Social network key.
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Optional. Wishlist object.
 	 * @return string
 	 */
 	public static function get_share_link( $social, $wishlist = false ) {
@@ -301,7 +323,7 @@ class Helper {
 		}
 
 		$icon = self::get_icon( $social );
-		$text = 'link' == $social ? __( 'Copy link', 'wcboost-wishlist' ) : ucwords( $social );
+		$text = 'link' === $social ? __( 'Copy link', 'wcboost-wishlist' ) : ucwords( $social );
 		$link = sprintf(
 			'<a href="%s" target="_blank" aria-label="%s" class="wcboost-wishlist-share-link" data-social="%s" rel="nofollow">
 				<span class="wcboost-wishlist-share-link__icon">%s</span>
@@ -309,7 +331,7 @@ class Helper {
 			</a>',
 			esc_url( $url ),
 			/* translators: %s social name */
-			esc_attr( 'link' == $social ? $text : sprintf( __( 'Share on %s', 'wcboost-wishlist' ), $text ) ),
+			esc_attr( 'link' === $social ? $text : sprintf( __( 'Share on %s', 'wcboost-wishlist' ), $text ) ),
 			esc_attr( $social ),
 			$icon,
 			esc_html( $text )
@@ -321,7 +343,7 @@ class Helper {
 	/**
 	 * Get the wishlist instance.
 	 *
-	 * @param int|string $id The wishlist ID or Token
+	 * @param int|string $id The wishlist ID or token.
 	 *
 	 * @return \WCBoost\Wishlist\Wishlist
 	 */
@@ -333,7 +355,7 @@ class Helper {
 	 * Generate the hash key for a wishlist
 	 *
 	 * @since 1.1.6
-	 * @param \WCBoost\Wishlist\Wishlist|null $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist|null $wishlist Optional. Wishlist object.
 	 *
 	 * @return string
 	 */
@@ -351,7 +373,7 @@ class Helper {
 	/**
 	 * Render the wishlist widget content.
 	 *
-	 * @param array $args The arguments to render widget content
+	 * @param array $args The arguments to render widget content.
 	 *
 	 * @return void
 	 */

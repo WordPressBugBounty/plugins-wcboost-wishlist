@@ -73,12 +73,12 @@ class Compatibility {
 			return;
 		}
 
-		$translations = apply_filters( 'wpml_get_element_translations', NULL, $trid, 'post_page' );
-		$default_lang = apply_filters( 'wpml_default_language', NULL );
+		$translations = apply_filters( 'wpml_get_element_translations', null, $trid, 'post_page' );
+		$default_lang = apply_filters( 'wpml_default_language', null );
 
 		foreach ( $translations as $translate_page_obj ) {
 			// No need to add rewrite rule for default language.
-			if ( $default_lang == $translate_page_obj->language_code ) {
+			if ( $default_lang === $translate_page_obj->language_code ) {
 				continue;
 			}
 
@@ -95,7 +95,7 @@ class Compatibility {
 	/**
 	 * Translate product id if a wishlist item
 	 *
-	 * @param  int $product_id
+	 * @param  int $product_id Product ID.
 	 * @return int
 	 */
 	public function translate_product_id( $product_id ) {
@@ -105,7 +105,7 @@ class Compatibility {
 	/**
 	 * Translate variation id if a wishlist item
 	 *
-	 * @param  int $variation_id
+	 * @param  int $variation_id Variation ID.
 	 * @return int
 	 */
 	public function translate_variation_id( $variation_id ) {
@@ -115,11 +115,11 @@ class Compatibility {
 	/**
 	 * Treanslate product ID to the default language.
 	 *
-	 * @param  int $product_id
+	 * @param  int $product_id Product ID.
 	 * @return int
 	 */
 	public function translate_product_id_to_default( $product_id ) {
-		$default_lang = apply_filters( 'wpml_default_language', NULL );
+		$default_lang = apply_filters( 'wpml_default_language', null );
 
 		/**
 		 * Set the third parameter to true to return the original ID if the translation is not found.
@@ -131,16 +131,16 @@ class Compatibility {
 	/**
 	 * Tranlslate item key to the default language.
 	 *
-	 * @param  string $key
-	 * @param  int $product_id
-	 * @param  int $variation_id
+	 * @param  string $key          Wishlist item key.
+	 * @param  int    $product_id   Product ID.
+	 * @param  int    $variation_id Variation ID.
 	 * @return string
 	 */
 	public function translate_item_key_to_default( $key, $product_id, $variation_id ) {
-		$default_lang = apply_filters( 'wpml_default_language', NULL );
-		$current_lang = apply_filters( 'wpml_current_language', NULL );
+		$default_lang = apply_filters( 'wpml_default_language', null );
+		$current_lang = apply_filters( 'wpml_current_language', null );
 
-		if ( $default_lang == $current_lang ) {
+		if ( $default_lang === $current_lang ) {
 			return $key;
 		}
 
@@ -156,7 +156,7 @@ class Compatibility {
 	/**
 	 * Translate the option of wishlist page id
 	 *
-	 * @param  int $page_id
+	 * @param  int $page_id Wishlist page ID.
 	 *
 	 * @return int
 	 */
@@ -168,7 +168,7 @@ class Compatibility {
 	 * Translate the hash key by adding a suffix
 	 *
 	 * @since 1.1.6
-	 * @param  string $hash_key
+	 * @param  string $hash_key Wishlist hash key.
 	 *
 	 * @return string
 	 */

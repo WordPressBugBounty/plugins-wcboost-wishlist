@@ -72,7 +72,7 @@ class Wishlist_Item extends \WC_Data {
 
 		// Set a product object.
 		if ( $data instanceof \WC_Product ) {
-			if ( $data->get_type() == 'variation' ) {
+			if ( $data->get_type() === 'variation' ) {
 				$this->set_product_id( $data->get_parent_id() );
 				$this->set_variation_id( $data->get_id() );
 			} else {
@@ -154,7 +154,7 @@ class Wishlist_Item extends \WC_Data {
 	/**
 	 * Set item key
 	 *
-	 * @param int $id Item key.
+	 * @param string $key Item key.
 	 */
 	public function set_item_key( $key ) {
 		$this->set_prop( 'item_key', $key );
@@ -184,7 +184,7 @@ class Wishlist_Item extends \WC_Data {
 	 * @param string $status The item status: publish, trash.
 	 */
 	public function set_status( $status ) {
-		$this->set_prop( 'status', in_array( $status, [ 'publish', 'trash' ] ) ? $status : 'publish' );
+		$this->set_prop( 'status', in_array( $status, [ 'publish', 'trash' ], true ) ? $status : 'publish' );
 	}
 
 	/**

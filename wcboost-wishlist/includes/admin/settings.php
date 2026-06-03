@@ -22,7 +22,7 @@ class Settings extends \WC_Settings_Page {
 	 * Class constructor.
 	 */
 	public function __construct() {
-		$this->id = 'wcboost_wishlist';
+		$this->id    = 'wcboost_wishlist';
 		$this->label = __( 'Wishlist', 'wcboost-wishlist' );
 
 		// Add settings of endpoints to the Advanced tab.
@@ -128,8 +128,13 @@ class Settings extends \WC_Settings_Page {
 				'type'  => 'title',
 				'title' => __( 'Wishlist button', 'wcboost-wishlist' ),
 				/* translators: %s: URL to the Customizer section */
-				'desc' => wp_kses( sprintf( __( 'This section controls how the wishlist button is displayed and worked. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_button' ) ) ), [ 'a' => [ 'href' => true, 'target' => true ] ] ),
-				'id'   => 'wcboost_wishlist_button_section',
+				'desc'  => wp_kses( sprintf( __( 'This section controls how the wishlist button is displayed and worked. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_button' ) ) ), [
+					'a' => [
+						'href'   => true,
+						'target' => true,
+					],
+				] ),
+				'id'    => 'wcboost_wishlist_button_section',
 			],
 			[
 				'name'          => __( 'Add to wishlist behaviour', 'wcboost-wishlist' ),
@@ -173,7 +178,7 @@ class Settings extends \WC_Settings_Page {
 					'manual'             => __( 'Manually use shortcode', 'wcboost-wishlist' ),
 				],
 			],
-			'loop_button_position' => [
+			'loop_button_position'   => [
 				'name'     => __( 'Button in loop', 'wcboost-wishlist' ),
 				'desc'     => __( 'Choose where to show "Add to wishlist" button on the product catalog pages.', 'wcboost-wishlist' ),
 				'desc_tip' => __( 'Manually use the button shortcode: [wcboost_wishlist_button]', 'wcboost-wishlist' ),
@@ -196,7 +201,12 @@ class Settings extends \WC_Settings_Page {
 				'type'  => 'title',
 				'title' => __( 'Wishlist Page', 'wcboost-wishlist' ),
 				/* translators: %s: URL to the Customizer section */
-				'desc'  => wp_kses( sprintf( __( 'This section controls how the wishlist page is displayed. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_page' ) ) ), [ 'a' => [ 'href' => true, 'target' => true ] ] ),
+				'desc'  => wp_kses( sprintf( __( 'This section controls how the wishlist page is displayed. Some visual settings can be configured in the <a href="%s" target="_blank">Customizer</a>.', 'wcboost-wishlist' ), esc_url( admin_url( 'customize.php?autofocus[section]=wcboost_wishlist_page' ) ) ), [
+					'a' => [
+						'href'   => true,
+						'target' => true,
+					],
+				] ),
 				'id'    => 'wcboost_wishlist_page_section',
 			],
 			[

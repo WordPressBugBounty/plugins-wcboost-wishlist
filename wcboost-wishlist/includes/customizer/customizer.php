@@ -125,11 +125,26 @@ class Customizer {
 		);
 
 		$columns = [
-			'price'    => [ 'label' => __( 'Product price', 'wcboost-wishlist' ), 'default' => 'yes' ],
-			'stock'    => [ 'label' => __( 'Stock status', 'wcboost-wishlist' ), 'default' => 'yes' ],
-			'quantity' => [ 'label' => __( 'Quantity', 'wcboost-wishlist' ), 'default' => 'no' ],
-			'date'     => [ 'label' => __( 'Date added', 'wcboost-wishlist' ), 'default' => 'no' ],
-			'purchase' => [ 'label' => __( 'Add to cart', 'wcboost-wishlist' ), 'default' => 'yes' ],
+			'price'    => [
+				'label'   => __( 'Product price', 'wcboost-wishlist' ),
+				'default' => 'yes',
+			],
+			'stock'    => [
+				'label'   => __( 'Stock status', 'wcboost-wishlist' ),
+				'default' => 'yes',
+			],
+			'quantity' => [
+				'label'   => __( 'Quantity', 'wcboost-wishlist' ),
+				'default' => 'no',
+			],
+			'date'     => [
+				'label'   => __( 'Date added', 'wcboost-wishlist' ),
+				'default' => 'no',
+			],
+			'purchase' => [
+				'label'   => __( 'Add to cart', 'wcboost-wishlist' ),
+				'default' => 'yes',
+			],
 		];
 
 		// Add a hidden option for checkboxes title.
@@ -194,7 +209,7 @@ class Customizer {
 	private function register_button_settings( $wp_customize ) {
 		$section = 'wcboost_wishlist_button';
 
-		if ( 'theme' != wc_get_theme_support( 'wishlist::single_button_position' ) ) {
+		if ( 'theme' !== wc_get_theme_support( 'wishlist::single_button_position' ) ) {
 			$wp_customize->add_setting(
 				'wcboost_wishlist_single_button_position',
 				[
@@ -222,7 +237,7 @@ class Customizer {
 			);
 		}
 
-		if ( 'theme' != wc_get_theme_support( 'wishlist::loop_button_position' ) ) {
+		if ( 'theme' !== wc_get_theme_support( 'wishlist::loop_button_position' ) ) {
 			$wp_customize->add_setting(
 				'wcboost_wishlist_loop_button_position',
 				[
@@ -373,7 +388,7 @@ class Customizer {
 		);
 
 		// Allow themes to fixed the button style.
-		if ( 'theme' != wc_get_theme_support( 'wishlist::button_type' ) ) {
+		if ( 'theme' !== wc_get_theme_support( 'wishlist::button_type' ) ) {
 			$wp_customize->add_setting(
 				'wcboost_wishlist_button_type',
 				[
@@ -393,7 +408,7 @@ class Customizer {
 						'button' => __( 'Normal button', 'wcboost-wishlist' ),
 						'text'   => __( 'Text button', 'wcboost-wishlist' ),
 						'custom' => __( 'Custom button', 'wcboost-wishlist' ),
-					]
+					],
 				]
 			);
 
@@ -465,7 +480,7 @@ class Customizer {
 				)
 			);
 
-			// Hover
+			// Hover.
 			$wp_customize->add_setting(
 				'wcboost_wishlist_button_hover_style[background_color]',
 				[
@@ -561,7 +576,7 @@ class Customizer {
 	 * @return string
 	 */
 	public function sanitize_wisthlist_title_mode( $mode ) {
-		return in_array( $mode, [ 'page_title', 'wishlist_title' ] ) ? $mode : 'page_title';
+		return in_array( $mode, [ 'page_title', 'wishlist_title' ], true ) ? $mode : 'page_title';
 	}
 
 	/**

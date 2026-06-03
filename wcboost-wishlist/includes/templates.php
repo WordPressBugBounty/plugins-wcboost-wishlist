@@ -18,7 +18,7 @@ class Templates {
 	/**
 	 * Get the appropriate wishlist template based on wishlist state
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return string
 	 */
 	public static function get_wishlist_template( $wishlist ) {
@@ -40,7 +40,7 @@ class Templates {
 	/**
 	 * Get wishlist content template
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return string
 	 */
 	public static function get_wishlist_content_template( $wishlist ) {
@@ -53,9 +53,9 @@ class Templates {
 	/**
 	 * Load wishlist template with args
 	 *
-	 * @param string $template Template name
-	 * @param array $args Template arguments
-	 * @param string $template_path Optional template path
+	 * @param string $template Template name.
+	 * @param array  $args Template arguments.
+	 * @param string $template_path Optional template path.
 	 * @return void
 	 */
 	public static function load_template( $template, $args = [], $template_path = '' ) {
@@ -69,9 +69,9 @@ class Templates {
 	/**
 	 * Get template HTML
 	 *
-	 * @param string $template Template name
-	 * @param array $args Template arguments
-	 * @param string $template_path Optional template path
+	 * @param string $template Template name.
+	 * @param array  $args Template arguments.
+	 * @param string $template_path Optional template path.
 	 * @return string
 	 */
 	public static function get_template_html( $template, $args = [], $template_path = '' ) {
@@ -85,7 +85,7 @@ class Templates {
 	/**
 	 * Get wishlist template args
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 *
 	 * @return array
 	 */
@@ -106,8 +106,8 @@ class Templates {
 	/**
 	 * Get button template arguments
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
-	 * @param \WCBoost\Wishlist\Wishlist_Item $item
+	 * @param \WCBoost\Wishlist\Wishlist      $wishlist Wishlist object.
+	 * @param \WCBoost\Wishlist\Wishlist_Item $item     Wishlist item object.
 	 * @return array
 	 */
 	public static function get_button_template_args( $wishlist, $item ) {
@@ -129,7 +129,7 @@ class Templates {
 
 		$args['class'][] = 'wcboost-wishlist-button--' . $button_type;
 
-		if ( 'text' != $button_type ) {
+		if ( 'text' !== $button_type ) {
 			$args['class'][] = 'button';
 
 			if ( function_exists( 'wp_theme_get_element_class_name' ) ) {
@@ -151,7 +151,7 @@ class Templates {
 					break;
 
 				case 'remove':
-					$args['url']        = $item->get_remove_url();
+					$args['url'] = $item->get_remove_url();
 					/* translators: %s product name */
 					$args['aria-label'] = sprintf( __( 'Remove %s from the wishlist', 'wcboost-wishlist' ), '&ldquo;' . $product->get_title() . '&rdquo;' );
 					$args['label']      = Helper::get_button_text( 'remove' );
@@ -168,7 +168,7 @@ class Templates {
 		}
 
 		if ( wc_string_to_bool( get_option( 'wcboost_wishlist_allow_adding_variations' ) ) && $product->is_type( 'variable' ) ) {
-			/** @var \WC_Product_Variable $product */
+			/** @var \WC_Product_Variable $product */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 			$variations = $product->get_available_variations( 'objects' );
 			$data       = [];
 
@@ -207,7 +207,7 @@ class Templates {
 			$args['attributes']['data-variations'] = wp_json_encode( $args['variations_data'] );
 		}
 
-		$args = apply_filters( 'wcboost_wishlist_button_template_args', $args, $wishlist, $product );
+		$args          = apply_filters( 'wcboost_wishlist_button_template_args', $args, $wishlist, $product );
 		$args['class'] = implode( ' ', (array) $args['class'] );
 
 		return $args;
@@ -216,7 +216,7 @@ class Templates {
 	/**
 	 * Get wishlist content template args
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return array
 	 */
 	public static function get_content_template_args( $wishlist ) {
@@ -228,16 +228,16 @@ class Templates {
 			'show_variation_data' => apply_filters( 'wcboost_wishlist_show_variation_data', $allow_variations ),
 		];
 
-		if ( 'table' == $wishlist_layout ) {
-			$default_columns  = [
+		if ( 'table' === $wishlist_layout ) {
+			$default_columns = [
 				'price'    => 'yes',
 				'stock'    => 'yes',
 				'quantity' => 'no',
 				'date'     => 'no',
 				'purchase' => 'yes',
 			];
-			$columns = get_option( 'wcboost_wishlist_table_columns', $default_columns );
-			$columns = wp_parse_args( $columns, $default_columns );
+			$columns         = get_option( 'wcboost_wishlist_table_columns', $default_columns );
+			$columns         = wp_parse_args( $columns, $default_columns );
 
 			$args['columns'] = array_map( 'wc_string_to_bool', $columns );
 		}
@@ -248,7 +248,7 @@ class Templates {
 	/**
 	 * Get wishlist header template args
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return array
 	 */
 	public static function get_header_template_args( $wishlist ) {
@@ -266,7 +266,7 @@ class Templates {
 	/**
 	 * Get wishlist footer template args
 	 *
-	 * @param \WCBoost\Wishlist\Wishlist $wishlist
+	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 * @return array
 	 */
 	public static function get_footer_template_args( $wishlist ) {
@@ -284,8 +284,8 @@ class Templates {
 	 */
 	private static function get_wishlist_content_layout() {
 		$supported_layouts = (array) apply_filters( 'wcboost_wishlist_supported_layouts', [ 'table' ] );
-		$layout = apply_filters( 'wcboost_wishlist_layout', 'table' );
-		$layout = in_array( $layout, $supported_layouts ) ? $layout : 'table';
+		$layout            = apply_filters( 'wcboost_wishlist_layout', 'table' );
+		$layout            = in_array( $layout, $supported_layouts, true ) ? $layout : 'table';
 
 		return $layout;
 	}

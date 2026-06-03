@@ -86,13 +86,13 @@ class Install {
 		// Wishlist table.
 		if ( ! isset( $wpdb->wishlists ) ) {
 			$wpdb->wishlists = $wpdb->prefix . 'wcboost_wishlists';
-			$wpdb->tables[] = 'wcboost_wishlists';
+			$wpdb->tables[]  = 'wcboost_wishlists';
 		}
 
 		// Wishlist items table.
 		if ( ! isset( $wpdb->wishlist_items ) ) {
 			$wpdb->wishlist_items = $wpdb->prefix . 'wcboost_wishlist_items';
-			$wpdb->tables[] = 'wcboost_wishlist_items';
+			$wpdb->tables[]       = 'wcboost_wishlist_items';
 		}
 	}
 

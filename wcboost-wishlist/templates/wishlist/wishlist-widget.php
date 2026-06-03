@@ -23,7 +23,7 @@ if ( ! $wishlist->is_empty() ) {
 	<ul class="wcboost-wishlist-widget__products <?php echo esc_attr( $args['list_class'] ); ?>">
 		<?php
 		foreach ( $wishlist->get_items() as $item_key => $item ) :
-			/** @var WC_Product */
+			/** @var WC_Product $_product */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 			$_product = $item->get_product();
 
 			if ( ! $_product || ! $_product->exists() ) {
@@ -33,7 +33,7 @@ if ( ! $wishlist->is_empty() ) {
 			<li class="wcboost-wishlist-widget__item wcboost-wishlist-widget-item">
 				<?php do_action( 'wcboost_wishlist_widget_item_start', $_product, $item, $wishlist ); ?>
 
-				<a href="<?php echo esc_url( $item->get_remove_url() ) ?>" class="wcboost-wishlist-widget-item__remove remove" rel="nofollow">&times;</a>
+				<a href="<?php echo esc_url( $item->get_remove_url() ); ?>" class="wcboost-wishlist-widget-item__remove remove" rel="nofollow">&times;</a>
 
 				<?php if ( $_product->is_visible() ) : ?>
 					<a href="<?php echo esc_url( $_product->get_permalink() ); ?>" class="wcboost-wishlist-widget-item__link">

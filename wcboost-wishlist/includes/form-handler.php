@@ -53,7 +53,7 @@ class Form_Handler {
 
 		// Stop if not allowing guests to creating wishlishs.
 		if ( ! wc_string_to_bool( get_option( 'wcboost_wishlist_enable_guest_wishlist', 'yes' ) ) && ! is_user_logged_in() ) {
-			if ( 'redirect_to_account_page' == get_option( 'wcboost_wishlist_guest_behaviour', 'message' ) ) {
+			if ( 'redirect_to_account_page' === get_option( 'wcboost_wishlist_guest_behaviour', 'message' ) ) {
 				wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
 				exit;
 			} else {
@@ -165,7 +165,7 @@ class Form_Handler {
 		$was_removed = $wishlist->remove_item( $item_key );
 
 		if ( $was_removed && ! is_wp_error( $was_removed ) ) {
-			$wishlist_url    = wc_get_page_permalink( 'wishlist' );
+			$wishlist_url = wc_get_page_permalink( 'wishlist' );
 			/* translators: %s: product name */
 			$removed_notice  = sprintf( __( '%s is removed from the wishlist.', 'wcboost-wishlist' ), '&ldquo;' . $item->get_product()->get_title() . '&rdquo;' );
 			$removed_notice .= ' <a href="' . esc_url( $item->get_restore_url() ) . '" class="restore-item">' . esc_html__( 'Undo?', 'wcboost-wishlist' ) . '</a>';
@@ -239,7 +239,7 @@ class Form_Handler {
 	 * Update wishlist action
 	 */
 	public static function update_wishlist() {
-		if ( ( isset( $_POST['action'] ) && 'update_wishlist' != $_POST['action'] ) || ! isset( $_POST['update_wishlist'] ) ) {
+		if ( ( isset( $_POST['action'] ) && 'update_wishlist' !== $_POST['action'] ) || ! isset( $_POST['update_wishlist'] ) ) {
 			return;
 		}
 
@@ -265,7 +265,7 @@ class Form_Handler {
 		if ( ! empty( $_POST['wishlist_title'] ) ) {
 			$title = sanitize_text_field( wp_unslash( $_POST['wishlist_title'] ) );
 
-			if ( $wishlist->get_wishlist_title() != $title ) {
+			if ( $wishlist->get_wishlist_title() !== $title ) {
 				$wishlist->set_wishlist_title( $title );
 				$wishlist->set_wishlist_slug( sanitize_title_with_dashes( $title ) );
 			}
@@ -386,7 +386,7 @@ class Form_Handler {
 		$token    = sanitize_text_field( wp_unslash( $_GET['untrash-wishlist'] ) );
 		$wishlist = Helper::get_wishlist( $token );
 
-		if ( ! $wishlist->get_id()  ) {
+		if ( ! $wishlist->get_id() ) {
 			return;
 		}
 
@@ -420,7 +420,7 @@ class Form_Handler {
 	 * @since 1.1.4
 	 */
 	public static function merge_guest_wishlist() {
-		if ( ! isset( $_GET['action'] ) || 'merge_guest_wishlist' != $_GET['action'] ) {
+		if ( ! isset( $_GET['action'] ) || 'merge_guest_wishlist' !== $_GET['action'] ) {
 			return;
 		}
 
@@ -469,7 +469,7 @@ class Form_Handler {
 	 * @since 1.1.4
 	 */
 	public static function ignore_merge_guest_wishlist() {
-		if ( ! isset( $_GET['action'] ) || 'ignore_merge_guest_wishlist' != $_GET['action'] ) {
+		if ( ! isset( $_GET['action'] ) || 'ignore_merge_guest_wishlist' !== $_GET['action'] ) {
 			return;
 		}
 
@@ -491,10 +491,10 @@ class Form_Handler {
 	/**
 	 * Remove a product from the wishlist automatically once it is added to the cart.
 	 *
-	 * @param string $cart_item_key
-	 * @param int $product_id
-	 * @param int $quantity
-	 * @param int $variation_id
+	 * @param string $cart_item_key Cart item key.
+	 * @param int    $product_id    Product ID.
+	 * @param int    $quantity      Quantity added to the cart.
+	 * @param int    $variation_id  Variation ID.
 	 */
 	public static function auto_remove_item_on_add_to_cart( $cart_item_key, $product_id, $quantity, $variation_id ) {
 		$removing_product = $variation_id ? wc_get_product( $variation_id ) : wc_get_product( $product_id );
@@ -505,15 +505,14 @@ class Form_Handler {
 	/**
 	 * Remove a product from the wishlist automatically once an order has been created
 	 *
-	 * @param int $order_item_id
-	 * @param \WC_Order_Item $order_item
+	 * @param int                    $order_item_id Order item ID.
+	 * @param \WC_Order_Item_Product $order_item    Order item object.
 	 */
 	public static function auto_remove_item_on_checkout( $order_item_id, $order_item ) {
 		if ( ! is_a( $order_item, '\WC_Order_Item_Product' ) ) {
 			return;
 		}
 
-		/** @var WC_Order_Item_Product $order_item */
 		$removing_product = $order_item->get_product();
 		self::auto_remove_item( $removing_product );
 	}
@@ -521,7 +520,7 @@ class Form_Handler {
 	/**
 	 * Auto remove item an item from the wishlist
 	 *
-	 * @param \WC_Product $product
+	 * @param \WC_Product $product Product to remove from the wishlist.
 	 */
 	protected static function auto_remove_item( $product ) {
 		$removing_item = new Wishlist_Item( $product );

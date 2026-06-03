@@ -51,10 +51,10 @@ class Wishlist {
 		}
 
 		if ( is_user_logged_in() ) {
-			$user_id = $wishlist->get_user_id( 'edit' );
+			$user_id         = $wishlist->get_user_id( 'edit' );
 			$current_user_id = get_current_user_id();
 
-			if ( ! $user_id || ( $current_user_id != $user_id && ! current_user_can( 'manage_options' ) ) ) {
+			if ( ! $user_id || ( $current_user_id !== $user_id && ! current_user_can( 'manage_options' ) ) ) {
 				$wishlist->set_user_id( $current_user_id );
 			}
 		} else {
@@ -169,7 +169,7 @@ class Wishlist {
 					'is_default'     => $wishlist->get_is_default( 'edit' ),
 				],
 				[
-					'wishlist_id' => $wishlist->get_wishlist_id( 'edit' )
+					'wishlist_id' => $wishlist->get_wishlist_id( 'edit' ),
 				]
 			);
 
@@ -191,7 +191,7 @@ class Wishlist {
 	 * @since 1.0.0
 	 *
 	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
-	 * @param array                       $args Array of args to pass to the delete method.
+	 * @param array                      $args Array of args to pass to the delete method.
 	 */
 	public function delete( &$wishlist, $args = [] ) {
 		if ( ! $wishlist->get_wishlist_id() ) {
@@ -223,7 +223,7 @@ class Wishlist {
 	 *
 	 * @param \WCBoost\Wishlist\Wishlist $wishlist Wishlist object.
 	 *
-	 * @throws Exception If invalid wishlist
+	 * @throws \Exception If invalid wishlist.
 	 */
 	public function read( &$wishlist ) {
 		global $wpdb;
@@ -306,18 +306,23 @@ class Wishlist {
 		$items = wp_cache_get( 'wcboost-wishlist-items-' . $wishlist_id, 'wishlists' );
 
 		if ( false === $items ) {
+			// Single SELECT primes per-item caches and avoids N+1 reads when items are constructed below.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$items = $wpdb->get_col( $wpdb->prepare( "SELECT item_id FROM {$wpdb->prefix}wcboost_wishlist_items WHERE wishlist_id = %d;", [ $wishlist_id ] ) );
+			$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wcboost_wishlist_items WHERE wishlist_id = %d;", [ $wishlist_id ] ) );
+			$items = [];
 
-			if ( ! empty( $items ) ) {
-				wp_cache_set( 'wcboost-wishlist-items-' . $wishlist_id, $items, 'wishlists' );
+			foreach ( (array) $rows as $row ) {
+				$items[] = absint( $row->item_id );
+				wp_cache_set( 'wcboost-wishlist-item-' . $row->item_id, $row, 'wishlists' );
 			}
+
+			wp_cache_set( 'wcboost-wishlist-items-' . $wishlist_id, $items, 'wishlists' );
 		}
 
 		foreach ( $items as $item_id ) {
 			$item = new \WCBoost\Wishlist\Wishlist_Item( absint( $item_id ) );
 
-			if ( $item->get_status() == 'trash' ) {
+			if ( $item->get_status() === 'trash' ) {
 				$wishlist->add_item_to_trash( $item );
 			} else {
 				$wishlist->add_item( $item );

@@ -10,18 +10,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-spl_autoload_register( function ( $class ) {
+spl_autoload_register( function ( $class_name ) {
 	$namespace = 'WCBoost\\Packages\\';
 
-	if ( strncmp( $namespace, $class, strlen( $namespace ) ) !== 0 ) {
+	if ( strncmp( $namespace, $class_name, strlen( $namespace ) ) !== 0 ) {
 		return;
 	}
 
-	$relative_class = substr( $class, strlen( $namespace ) );
+	$relative_class = substr( $class_name, strlen( $namespace ) );
 
 	// Do not load the `Manager` class due to it is deprecated,
 	// but this class may be loaded from legacy code.
-	if ( $relative_class === 'Manager' ) {
+	if ( 'Manager' === $relative_class ) {
 		return;
 	}
 

@@ -73,16 +73,16 @@ final class Session {
 	 *
 	 * @return void
 	 */
-	private function set_hash_cookies( $set = true )  {
+	private function set_hash_cookies( $set = true ) {
 		if ( $set ) {
 			$wishlist = Helper::get_wishlist();
 			$hash     = $wishlist->get_hash();
 
-			wc_setcookie( static::HASH_COOKIE, $hash );
-			$_COOKIE[ static::HASH_COOKIE ] = $hash;
+			wc_setcookie( self::HASH_COOKIE, $hash );
+			$_COOKIE[ self::HASH_COOKIE ] = $hash;
 		} else {
-			wc_setcookie( static::HASH_COOKIE, '', time() - HOUR_IN_SECONDS );
-			unset( $_COOKIE[ static::HASH_COOKIE ] );
+			wc_setcookie( self::HASH_COOKIE, '', time() - HOUR_IN_SECONDS );
+			unset( $_COOKIE[ self::HASH_COOKIE ] );
 		}
 	}
 
@@ -134,7 +134,7 @@ final class Session {
 	 * @param \WP_User $user       User object.
 	 */
 	public function set_merge_guest_wishlist_flag( $user_login, $user ) {
-		if ( ! static::get_session_id() ) {
+		if ( ! self::get_session_id() ) {
 			return;
 		}
 
@@ -174,21 +174,21 @@ final class Session {
 
 		// Reset the flag if: no guest wishlist, or merging guest wishlist is disabled.
 		if (
-			! static::get_session_id() ||
+			! self::get_session_id() ||
 			! \wc_string_to_bool( get_option( 'wcboost_wishlist_enable_guest_wishlist', 'yes' ) ) ||
 			! \wc_string_to_bool( get_option( 'wcboost_wishlist_merge_guest_wishlist', 'yes' ) )
 		) {
-			static::delete_merge_guest_wishlist_flag();
+			self::delete_merge_guest_wishlist_flag();
 			return;
 		}
 
 		// Delete the flag if the guest wishlist is not found or empty.
 		$wishlist          = Helper::get_wishlist();
-		$guest_wishlist_id = $wishlist->get_data_store()->get_wishlist_id_by_session( static::get_session_id() );
+		$guest_wishlist_id = $wishlist->get_data_store()->get_wishlist_id_by_session( self::get_session_id() );
 		$guest_wishlist    = $guest_wishlist_id ? Helper::get_wishlist( $guest_wishlist_id ) : null;
 		$mergeable         = false;
 
-		if ( $guest_wishlist && ! $guest_wishlist->is_empty() && 'trash' != $guest_wishlist->get_status() ) {
+		if ( $guest_wishlist && ! $guest_wishlist->is_empty() && 'trash' !== $guest_wishlist->get_status() ) {
 			// Find if there is any new product that is not in the current wishlist.
 			foreach ( $guest_wishlist->get_items() as $item ) {
 				if ( ! $wishlist->has_product( $item->get_product_id() ) ) {
@@ -201,7 +201,7 @@ final class Session {
 		$mergeable = \wc_string_to_bool( apply_filters( 'wcboost_wishlist_merge_guest_wishlist', $mergeable, $guest_wishlist ) );
 
 		if ( ! $mergeable ) {
-			static::delete_merge_guest_wishlist_flag();
+			self::delete_merge_guest_wishlist_flag();
 			return;
 		}
 

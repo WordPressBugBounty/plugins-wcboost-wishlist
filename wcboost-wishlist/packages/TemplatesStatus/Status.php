@@ -6,6 +6,7 @@
  *
  * @package WCBoost\Packages\TemplatesStatus
  */
+
 namespace WCBoost\Packages\TemplatesStatus;
 
 use WCBoost\Packages\TemplatesStatus\TemplatesTrait;
@@ -32,7 +33,7 @@ class Status {
 	 * Get the updated theme info with custom WooCommerce templates provided by WCBoost Wishlist
 	 *
 	 * @since  1.0.0
-	 * @param  array $info
+	 * @param  array $info Theme info.
 	 *
 	 * @return array
 	 */

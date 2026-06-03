@@ -96,22 +96,22 @@ class Wishlist_Button_Widget extends Widget_Base {
 	 * @since 1.0.0
 	 * @access protected
 	 */
-	protected function _register_controls() {
+	protected function register_controls() {
 		$this->start_controls_section(
 			'content_section',
 			[
 				'label' => __( 'Wishlist button', 'wcboost-wishlist' ),
-				'tab' => Controls_Manager::TAB_CONTENT,
+				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
 
 		$this->add_control(
 			'product_id',
 			[
-				'label' => __( 'Product ID', 'wcboost-wishlist' ),
-				'type' => Controls_Manager::TEXT,
+				'label'       => __( 'Product ID', 'wcboost-wishlist' ),
+				'type'        => Controls_Manager::TEXT,
 				'description' => __( 'Leave empty to use the current product.', 'wcboost-wishlist' ),
-				'dynamic' => [
+				'dynamic'     => [
 					'active' => true,
 				],
 			]

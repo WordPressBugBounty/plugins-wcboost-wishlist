@@ -63,5 +63,4 @@ class Action_Scheduler {
 			wc_caught_exception( $e, __METHOD__ );
 		}
 	}
-
 }
